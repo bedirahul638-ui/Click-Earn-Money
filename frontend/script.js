@@ -1,14 +1,19 @@
-// Game Variables (Loaded from LocalStorage if exists)
+// Game Variables
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let tapPower = parseInt(localStorage.getItem('tapPower')) || 1;
 let coinsPerSec = parseInt(localStorage.getItem('coinsPerSec')) || 0;
 
-let currentEnergy = parseInt(localStorage.getItem('currentEnergy')) || 1000;
-let maxEnergy = parseInt(localStorage.getItem('maxEnergy')) || 1000;
+let maxEnergy = 100; // Fixed Max Energy = 100
+let currentEnergy = parseInt(localStorage.getItem('currentEnergy'));
+if (isNaN(currentEnergy)) {
+  currentEnergy = 100;
+}
 
 let tapUpgradeCost = parseInt(localStorage.getItem('tapUpgradeCost')) || 10;
 let botUpgradeCost = parseInt(localStorage.getItem('botUpgradeCost')) || 50;
-let energyUpgradeCost = parseInt(localStorage.getItem('energyUpgradeCost')) || 100;
+
+let countdownTimer = null;
+let timeLeft = 60;
 
 // DOM Elements
 const coinCountEl = document.getElementById('coin-count');
@@ -21,10 +26,13 @@ const rankNameEl = document.getElementById('rank-name');
 
 const tapCostEl = document.getElementById('tap-cost');
 const botCostEl = document.getElementById('bot-cost');
-const energyCostEl = document.getElementById('energy-cost');
 
 const coinBtn = document.getElementById('coin-btn');
 const dailyBtn = document.getElementById('daily-reward-btn');
+
+const videoModal = document.getElementById('video-modal');
+const timerCountEl = document.getElementById('timer-count');
+const claimEnergyBtn = document.getElementById('claim-energy-btn');
 
 // Ranks Array
 const ranks = [
@@ -44,10 +52,17 @@ coinBtn.addEventListener('click', (e) => {
     createFloatingText(e, `+${tapPower}`);
     updateUI();
     saveGame();
+
+    // Trigger Video Modal when Energy runs out
+    if (currentEnergy < tapPower) {
+      openVideoModal();
+    }
+  } else {
+    openVideoModal();
   }
 });
 
-// Create Floating Text Effect (+1, +2)
+// Floating Text Animation
 function createFloatingText(event, text) {
   const floatText = document.createElement('div');
   floatText.classList.add('floating-text');
@@ -67,7 +82,35 @@ function createFloatingText(event, text) {
   }, 800);
 }
 
-// Upgrade Functions
+// Modal Popup & 60 Seconds Timer
+function openVideoModal() {
+  videoModal.classList.add('active');
+  timeLeft = 60;
+  timerCountEl.innerText = timeLeft;
+  claimEnergyBtn.disabled = true;
+
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    timeLeft--;
+    timerCountEl.innerText = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(countdownTimer);
+      claimEnergyBtn.disabled = false;
+      timerCountEl.innerText = "Completed!";
+    }
+  }, 1000);
+}
+
+// Claim Energy Button Click
+claimEnergyBtn.addEventListener('click', () => {
+  currentEnergy = maxEnergy;
+  videoModal.classList.remove('active');
+  updateUI();
+  saveGame();
+});
+
+// Upgrades
 function buyTapUpgrade() {
   if (coins >= tapUpgradeCost) {
     coins -= tapUpgradeCost;
@@ -88,23 +131,11 @@ function buyBotUpgrade() {
   }
 }
 
-function buyEnergyUpgrade() {
-  if (coins >= energyUpgradeCost) {
-    coins -= energyUpgradeCost;
-    maxEnergy += 500;
-    currentEnergy = maxEnergy;
-    energyUpgradeCost = Math.floor(energyUpgradeCost * 1.8);
-    updateUI();
-    saveGame();
-  }
-}
-
 // Daily Reward Claim
 dailyBtn.addEventListener('click', () => {
   const lastClaim = localStorage.getItem('lastDailyClaim');
   const now = new Date().getTime();
 
-  // 24 Hours = 86400000 ms
   if (!lastClaim || now - lastClaim > 86400000) {
     const reward = 250;
     coins += reward;
@@ -117,7 +148,7 @@ dailyBtn.addEventListener('click', () => {
   }
 });
 
-// Update UI
+// UI Update Function
 function updateUI() {
   coinCountEl.innerText = coins.toLocaleString();
   tpcCountEl.innerText = tapPower;
@@ -131,9 +162,8 @@ function updateUI() {
 
   tapCostEl.innerText = tapUpgradeCost;
   botCostEl.innerText = botUpgradeCost;
-  energyCostEl.innerText = energyUpgradeCost;
 
-  // Rank Update Logic
+  // Rank Update
   let currentRank = ranks[0].name;
   for (let r of ranks) {
     if (coins >= r.minCoins) {
@@ -143,32 +173,23 @@ function updateUI() {
   rankNameEl.innerText = currentRank;
 }
 
-// Passive Income & Energy Regeneration Loop (Runs every second)
+// Passive Income Loop (Auto Bot Coins)
 setInterval(() => {
-  // Auto Bot Earnings
   if (coinsPerSec > 0) {
     coins += coinsPerSec;
+    updateUI();
+    saveGame();
   }
-
-  // Energy Regeneration (+3 per sec)
-  if (currentEnergy < maxEnergy) {
-    currentEnergy = Math.min(maxEnergy, currentEnergy + 3);
-  }
-
-  updateUI();
-  saveGame();
 }, 1000);
 
-// Local Storage Save
+// Local Storage Save Function
 function saveGame() {
   localStorage.setItem('coins', coins);
   localStorage.setItem('tapPower', tapPower);
   localStorage.setItem('coinsPerSec', coinsPerSec);
   localStorage.setItem('currentEnergy', currentEnergy);
-  localStorage.setItem('maxEnergy', maxEnergy);
   localStorage.setItem('tapUpgradeCost', tapUpgradeCost);
   localStorage.setItem('botUpgradeCost', botUpgradeCost);
-  localStorage.setItem('energyUpgradeCost', energyUpgradeCost);
 }
 
 // Initial Load
