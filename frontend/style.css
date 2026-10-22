@@ -1,0 +1,234 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  user-select: none;
+}
+
+body {
+  background: #0d0f17;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.game-container {
+  width: 100%;
+  max-width: 450px;
+  background: #161925;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header Section */
+.game-header {
+  text-align: center;
+  background: #1f2333;
+  padding: 15px;
+  border-radius: 15px;
+  border: 1px solid #2a2f45;
+}
+
+.rank-badge {
+  background: #ffb703;
+  color: #000;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.balance-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.currency-icon {
+  font-size: 2rem;
+}
+
+.balance-container h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #00f5d4;
+}
+
+.passive-income {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #a0a5c0;
+}
+
+/* Coin Section */
+.game-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.coin-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.coin {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, #ffe600 0%, #ffb703 70%, #d48b00 100%);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 30px rgba(255, 183, 3, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.6);
+  transition: transform 0.05s ease-in-out;
+  border: 6px solid #ffd166;
+}
+
+.coin-inner {
+  font-size: 4.5rem;
+}
+
+.coin:active {
+  transform: scale(0.92);
+}
+
+/* Floating Click Text Animation */
+.floating-text {
+  position: absolute;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #00f5d4;
+  pointer-events: none;
+  animation: floatUp 0.8s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(1.2);
+  }
+}
+
+/* Status & Energy */
+.status-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.energy-container {
+  background: #1f2333;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.energy-text {
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  color: #a0a5c0;
+}
+
+.energy-bar-bg {
+  width: 100%;
+  height: 12px;
+  background: #0d0f17;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.energy-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #7b2cbf, #00f5d4);
+  transition: width 0.2s ease;
+}
+
+.daily-btn {
+  width: 100%;
+  background: #7209b7;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.daily-btn:hover {
+  background: #560bad;
+}
+
+/* Shop Section */
+.shop-section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #f72585;
+}
+
+.upgrades-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.upgrade-card {
+  background: #1f2333;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #2a2f45;
+}
+
+.upgrade-info h3 {
+  font-size: 0.95rem;
+}
+
+.upgrade-info p {
+  font-size: 0.75rem;
+  color: #a0a5c0;
+}
+
+.upgrade-info .cost {
+  font-size: 0.8rem;
+  color: #00f5d4;
+  font-weight: 600;
+}
+
+.buy-btn {
+  background: #4cc9f0;
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.buy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
