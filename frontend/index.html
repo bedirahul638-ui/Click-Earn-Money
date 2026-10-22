@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Coin Clicker</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="game-container">
+    <!-- Header: Level / Rank & Stats -->
+    <header class="game-header">
+      <div class="rank-badge" id="rank-name">Bronze Miner</div>
+      <div class="balance-container">
+        <span class="currency-icon">🪙</span>
+        <h1 id="coin-count">0</h1>
+      </div>
+      <div class="passive-income">
+        <span>Per Sec: +<span id="pps-count">0</span></span>
+        <span>Tap Power: +<span id="tpc-count">1</span></span>
+      </div>
+    </header>
+
+    <!-- Main Game Area: Clicker Coin -->
+    <main class="game-body">
+      <div class="coin-wrapper" id="coin-btn">
+        <div class="coin">
+          <div class="coin-inner">⚡</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Energy Bar & Daily Reward -->
+    <section class="status-section">
+      <div class="energy-container">
+        <div class="energy-text">
+          ⚡ Energy: <span id="current-energy">1000</span> / <span id="max-energy">1000</span>
+        </div>
+        <div class="energy-bar-bg">
+          <div class="energy-bar-fill" id="energy-fill"></div>
+        </div>
+      </div>
+      <button class="daily-btn" id="daily-reward-btn">🎁 Claim Daily Bonus</button>
+    </section>
+
+    <!-- Upgrades & Shop Section -->
+    <section class="shop-section">
+      <h2> Upgrades & Miners</h2>
+      <div class="upgrades-list">
+        
+        <!-- Multi-Tap Upgrade -->
+        <div class="upgrade-card" id="upgrade-tap">
+          <div class="upgrade-info">
+            <h3>⚡ Multi-Tap</h3>
+            <p>Increases coins per click by +1</p>
+            <span class="cost">Cost: 🪙 <span id="tap-cost">10</span></span>
+          </div>
+          <button class="buy-btn" onclick="buyTapUpgrade()">Buy</button>
+        </div>
+
+        <!-- Auto Bot Miner -->
+        <div class="upgrade-card" id="upgrade-bot">
+          <div class="upgrade-info">
+            <h3>🤖 Auto Miner Bot</h3>
+            <p>Generates +2 coins per second</p>
+            <span class="cost">Cost: 🪙 <span id="bot-cost">50</span></span>
+          </div>
+          <button class="buy-btn" onclick="buyBotUpgrade()">Buy</button>
+        </div>
+
+        <!-- Energy Capacity Boost -->
+        <div class="upgrade-card" id="upgrade-energy">
+          <div class="upgrade-info">
+            <h3>🔋 Max Energy Boost</h3>
+            <p>Increases max energy by +500</p>
+            <span class="cost">Cost: 🪙 <span id="energy-cost">100</span></span>
+          </div>
+          <button class="buy-btn" onclick="buyEnergyUpgrade()">Buy</button>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
