@@ -28,7 +28,7 @@ body {
   gap: 20px;
 }
 
-/* Header Section */
+/* Header */
 .game-header {
   text-align: center;
   background: #1f2333;
@@ -74,12 +74,12 @@ body {
   color: #a0a5c0;
 }
 
-/* Coin Section */
+/* Coin Area */
 .game-body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px 0;
+  padding: 15px 0;
 }
 
 .coin-wrapper {
@@ -108,7 +108,6 @@ body {
   transform: scale(0.92);
 }
 
-/* Floating Click Text Animation */
 .floating-text {
   position: absolute;
   font-size: 1.5rem;
@@ -119,17 +118,11 @@ body {
 }
 
 @keyframes floatUp {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-50px) scale(1.2);
-  }
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
 }
 
-/* Status & Energy */
+/* Energy & Recharge */
 .status-section {
   display: flex;
   flex-direction: column;
@@ -163,20 +156,48 @@ body {
   transition: width 0.2s ease;
 }
 
-.daily-btn {
+.recharge-options {
+  background: #251b35;
+  border: 1px solid #7209b7;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.wait-msg {
+  font-size: 0.75rem;
+  color: #ffb703;
+  margin-bottom: 5px;
+}
+
+.timer-display {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #00f5d4;
+  margin-bottom: 8px;
+}
+
+.watch-ad-btn {
   width: 100%;
   background: #7209b7;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.daily-btn {
+  width: 100%;
+  background: #3a0ca3;
   color: #fff;
   border: none;
   padding: 10px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
-}
-
-.daily-btn:hover {
-  background: #560bad;
 }
 
 /* Shop Section */
@@ -202,20 +223,9 @@ body {
   border: 1px solid #2a2f45;
 }
 
-.upgrade-info h3 {
-  font-size: 0.95rem;
-}
-
-.upgrade-info p {
-  font-size: 0.75rem;
-  color: #a0a5c0;
-}
-
-.upgrade-info .cost {
-  font-size: 0.8rem;
-  color: #00f5d4;
-  font-weight: 600;
-}
+.upgrade-info h3 { font-size: 0.95rem; }
+.upgrade-info p { font-size: 0.75rem; color: #a0a5c0; }
+.upgrade-info .cost { font-size: 0.8rem; color: #00f5d4; font-weight: 600; }
 
 .buy-btn {
   background: #4cc9f0;
@@ -225,16 +235,13 @@ body {
   border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s;
 }
 
-/* Modal Popup Styles */
+/* Modal Popup */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   background: rgba(0, 0, 0, 0.85);
   display: none;
   justify-content: center;
@@ -243,9 +250,7 @@ body {
   padding: 20px;
 }
 
-.modal-overlay.active {
-  display: flex;
-}
+.modal-overlay.active { display: flex; }
 
 .modal-content {
   background: #161925;
@@ -255,44 +260,38 @@ body {
   max-width: 400px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 0 25px rgba(114, 9, 183, 0.5);
 }
 
-.modal-content h2 {
-  color: #ffb703;
-  font-size: 1.4rem;
-  margin-bottom: 5px;
-}
-
-.modal-content p {
-  font-size: 0.85rem;
-  color: #a0a5c0;
-  margin-bottom: 15px;
-}
+.modal-content h2 { color: #ffb703; font-size: 1.3rem; margin-bottom: 5px; }
+.modal-content p { font-size: 0.8rem; color: #a0a5c0; margin-bottom: 12px; }
 
 .video-container {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  padding-bottom: 56.25%;
   height: 0;
   overflow: hidden;
   border-radius: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   background: #000;
 }
 
 .video-container iframe {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
 }
 
 .timer-box {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #00f5d4;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
+}
+
+.modal-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .claim-energy-btn {
@@ -300,17 +299,25 @@ body {
   background: linear-gradient(90deg, #38b000, #70e000);
   color: #000;
   border: none;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 10px;
+  border-radius: 8px;
   font-weight: 800;
-  font-size: 1rem;
   cursor: pointer;
-  transition: opacity 0.3s ease;
 }
 
 .claim-energy-btn:disabled {
   background: #2a2f45;
   color: #6c757d;
   cursor: not-allowed;
-  opacity: 0.6;
+}
+
+.like-btn {
+  display: block;
+  text-decoration: none;
+  background: #ff0000;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
