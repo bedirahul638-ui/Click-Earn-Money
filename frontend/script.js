@@ -3,17 +3,21 @@ let coins = parseInt(localStorage.getItem('coins')) || 0;
 let tapPower = parseInt(localStorage.getItem('tapPower')) || 1;
 let coinsPerSec = parseInt(localStorage.getItem('coinsPerSec')) || 0;
 
-let maxEnergy = 100; // Fixed Max Energy = 100
-let currentEnergy = parseInt(localStorage.getItem('currentEnergy'));
-if (isNaN(currentEnergy)) {
-  currentEnergy = 100;
-}
+let maxEnergy = 100;
+let currentEnergy = localStorage.getItem('currentEnergy') !== null ? parseInt(localStorage.getItem('currentEnergy')) : 100;
+if (currentEnergy > maxEnergy) currentEnergy = maxEnergy;
 
 let tapUpgradeCost = parseInt(localStorage.getItem('tapUpgradeCost')) || 10;
 let botUpgradeCost = parseInt(localStorage.getItem('botUpgradeCost')) || 50;
 
-let countdownTimer = null;
-let timeLeft = 60;
+let lastEnergyZeroTime = parseInt(localStorage.getItem('lastEnergyZeroTime')) || 0;
+let hourlyTimerInterval = null;
+
+// YouTube API Variables
+let player;
+let isVideoPlaying = false;
+let watchTimeLeft = 60;
+let videoTimerInterval = null;
 
 // DOM Elements
 const coinCountEl = document.getElementById('coin-count');
@@ -30,11 +34,15 @@ const botCostEl = document.getElementById('bot-cost');
 const coinBtn = document.getElementById('coin-btn');
 const dailyBtn = document.getElementById('daily-reward-btn');
 
+const rechargeBox = document.getElementById('recharge-box');
+const hourlyTimerEl = document.getElementById('hourly-timer');
+
 const videoModal = document.getElementById('video-modal');
 const timerCountEl = document.getElementById('timer-count');
 const claimEnergyBtn = document.getElementById('claim-energy-btn');
+const likeBtn = document.getElementById('like-btn');
 
-// Ranks Array
+// Ranks
 const ranks = [
   { name: 'Bronze Miner', minCoins: 0 },
   { name: 'Silver Clicker', minCoins: 500 },
@@ -43,26 +51,57 @@ const ranks = [
   { name: 'Crypto Legend', minCoins: 50000 }
 ];
 
-// Tap Event Listener
+// Load YouTube API Player
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    videoId: 'YOUR_VIDEO_ID', // Replace with your YouTube Video ID
+    events: {
+      'onStateChange': onPlayerStateChange
+    }
+  });
+}
+
+function onPlayerStateChange(event) {
+  if (event.data == YT.PlayerState.PLAYING) {
+    isVideoPlaying = true;
+    startVideoTimer();
+  } else {
+    isVideoPlaying = false;
+    stopVideoTimer();
+  }
+}
+
+// Click Event
 coinBtn.addEventListener('click', (e) => {
   if (currentEnergy >= tapPower) {
     coins += tapPower;
     currentEnergy -= tapPower;
     
     createFloatingText(e, `+${tapPower}`);
+    
+    if (currentEnergy <= 0) {
+      currentEnergy = 0;
+      triggerZeroEnergy();
+    }
+
     updateUI();
     saveGame();
-
-    // Trigger Video Modal when Energy runs out
-    if (currentEnergy < tapPower) {
-      openVideoModal();
-    }
   } else {
-    openVideoModal();
+    if (currentEnergy <= 0) {
+      triggerZeroEnergy();
+    }
   }
 });
 
-// Floating Text Animation
+function triggerZeroEnergy() {
+  if (!lastEnergyZeroTime) {
+    lastEnergyZeroTime = new Date().getTime();
+    localStorage.setItem('lastEnergyZeroTime', lastEnergyZeroTime);
+  }
+  openVideoModal();
+}
+
+// Floating Text
 function createFloatingText(event, text) {
   const floatText = document.createElement('div');
   floatText.classList.add('floating-text');
@@ -77,38 +116,88 @@ function createFloatingText(event, text) {
 
   coinBtn.appendChild(floatText);
 
-  setTimeout(() => {
-    floatText.remove();
-  }, 800);
+  setTimeout(() => floatText.remove(), 800);
 }
 
-// Modal Popup & 60 Seconds Timer
+// Modal Functions
 function openVideoModal() {
   videoModal.classList.add('active');
-  timeLeft = 60;
-  timerCountEl.innerText = timeLeft;
+  watchTimeLeft = 60;
+  timerCountEl.innerText = watchTimeLeft;
   claimEnergyBtn.disabled = true;
+}
 
-  clearInterval(countdownTimer);
-  countdownTimer = setInterval(() => {
-    timeLeft--;
-    timerCountEl.innerText = timeLeft;
+function startVideoTimer() {
+  if (videoTimerInterval) clearInterval(videoTimerInterval);
 
-    if (timeLeft <= 0) {
-      clearInterval(countdownTimer);
-      claimEnergyBtn.disabled = false;
-      timerCountEl.innerText = "Completed!";
+  videoTimerInterval = setInterval(() => {
+    if (isVideoPlaying) {
+      watchTimeLeft--;
+      timerCountEl.innerText = watchTimeLeft;
+
+      if (watchTimeLeft <= 0) {
+        clearInterval(videoTimerInterval);
+        claimEnergyBtn.disabled = false;
+        timerCountEl.innerText = "Completed! Claim Energy Below";
+      }
     }
   }, 1000);
 }
 
-// Claim Energy Button Click
+function stopVideoTimer() {
+  if (videoTimerInterval) clearInterval(videoTimerInterval);
+}
+
+// Claim Energy Button
 claimEnergyBtn.addEventListener('click', () => {
   currentEnergy = maxEnergy;
+  lastEnergyZeroTime = 0;
+  localStorage.removeItem('lastEnergyZeroTime');
   videoModal.classList.remove('active');
+  if (player && player.pauseVideo) player.pauseVideo();
   updateUI();
   saveGame();
 });
+
+// Like Button (+500 Clicks Bonus)
+likeBtn.addEventListener('click', () => {
+  const hasLiked = localStorage.getItem('hasLikedVideo');
+  if (!hasLiked) {
+    coins += 500;
+    localStorage.setItem('hasLikedVideo', 'true');
+    alert("🎉 Thank you! +500 Coins added to your balance!");
+    updateUI();
+    saveGame();
+  } else {
+    alert("You have already claimed your 500 Coins bonus!");
+  }
+});
+
+// 1 Hour Countdown Loop
+setInterval(() => {
+  if (lastEnergyZeroTime > 0 && currentEnergy <= 0) {
+    const now = new Date().getTime();
+    const diff = now - lastEnergyZeroTime;
+    const totalHourMs = 3600000; // 1 Hour
+
+    if (diff >= totalHourMs) {
+      currentEnergy = maxEnergy;
+      lastEnergyZeroTime = 0;
+      localStorage.removeItem('lastEnergyZeroTime');
+      rechargeBox.style.display = 'none';
+      updateUI();
+      saveGame();
+    } else {
+      const remainingMs = totalHourMs - diff;
+      const minutes = Math.floor(remainingMs / 60000);
+      const seconds = Math.floor((remainingMs % 60000) / 1000);
+      hourlyTimerEl.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      rechargeBox.style.display = 'block';
+    }
+  } else {
+    rechargeBox.style.display = 'none';
+  }
+}, 1000);
 
 // Upgrades
 function buyTapUpgrade() {
@@ -131,24 +220,23 @@ function buyBotUpgrade() {
   }
 }
 
-// Daily Reward Claim
+// Daily Reward
 dailyBtn.addEventListener('click', () => {
   const lastClaim = localStorage.getItem('lastDailyClaim');
   const now = new Date().getTime();
 
   if (!lastClaim || now - lastClaim > 86400000) {
-    const reward = 250;
-    coins += reward;
+    coins += 250;
     localStorage.setItem('lastDailyClaim', now);
-    alert(`🎉 Daily Bonus Claimed! You got ${reward} coins!`);
+    alert(`🎉 Daily Bonus Claimed! +250 coins!`);
     updateUI();
     saveGame();
   } else {
-    alert("⌛ You have already claimed your bonus today! Check back tomorrow.");
+    alert("⌛ Already claimed today! Check back tomorrow.");
   }
 });
 
-// UI Update Function
+// UI Update
 function updateUI() {
   coinCountEl.innerText = coins.toLocaleString();
   tpcCountEl.innerText = tapPower;
@@ -163,17 +251,14 @@ function updateUI() {
   tapCostEl.innerText = tapUpgradeCost;
   botCostEl.innerText = botUpgradeCost;
 
-  // Rank Update
   let currentRank = ranks[0].name;
   for (let r of ranks) {
-    if (coins >= r.minCoins) {
-      currentRank = r.name;
-    }
+    if (coins >= r.minCoins) currentRank = r.name;
   }
   rankNameEl.innerText = currentRank;
 }
 
-// Passive Income Loop (Auto Bot Coins)
+// Auto Passive Income
 setInterval(() => {
   if (coinsPerSec > 0) {
     coins += coinsPerSec;
@@ -182,7 +267,7 @@ setInterval(() => {
   }
 }, 1000);
 
-// Local Storage Save Function
+// Save Game
 function saveGame() {
   localStorage.setItem('coins', coins);
   localStorage.setItem('tapPower', tapPower);
