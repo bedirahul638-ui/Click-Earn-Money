@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="game-container">
-    <!-- Header: Level / Rank & Stats -->
+    <!-- Header -->
     <header class="game-header">
       <div class="rank-badge" id="rank-name">Bronze Miner</div>
       <div class="balance-container">
@@ -22,7 +22,7 @@
       </div>
     </header>
 
-    <!-- Main Game Area: Clicker Coin -->
+    <!-- Coin Area -->
     <main class="game-body">
       <div class="coin-wrapper" id="coin-btn">
         <div class="coin">
@@ -31,7 +31,7 @@
       </div>
     </main>
 
-    <!-- Energy Bar & Daily Reward -->
+    <!-- Energy Status -->
     <section class="status-section">
       <div class="energy-container">
         <div class="energy-text">
@@ -41,16 +41,22 @@
           <div class="energy-bar-fill" id="energy-fill"></div>
         </div>
       </div>
+      
+      <!-- Option To Recharge When Energy is 0 -->
+      <div class="recharge-options" id="recharge-box" style="display: none;">
+        <p class="wait-msg">Wait for 1 hour to recharge OR Watch Video</p>
+        <div class="timer-display">⏱️ Auto Recharge in: <span id="hourly-timer">60:00</span></div>
+        <button class="watch-ad-btn" onclick="openVideoModal()">📺 Watch Video to Recharge Instantly</button>
+      </div>
+
       <button class="daily-btn" id="daily-reward-btn">🎁 Claim Daily Bonus</button>
     </section>
 
-    <!-- Upgrades & Shop Section -->
+    <!-- Upgrades -->
     <section class="shop-section">
-      <h2> Upgrades & Miners</h2>
+      <h2>Upgrades & Miners</h2>
       <div class="upgrades-list">
-        
-        <!-- Multi-Tap Upgrade -->
-        <div class="upgrade-card" id="upgrade-tap">
+        <div class="upgrade-card">
           <div class="upgrade-info">
             <h3>⚡ Multi-Tap</h3>
             <p>Increases coins per click by +1</p>
@@ -59,8 +65,7 @@
           <button class="buy-btn" onclick="buyTapUpgrade()">Buy</button>
         </div>
 
-        <!-- Auto Bot Miner -->
-        <div class="upgrade-card" id="upgrade-bot">
+        <div class="upgrade-card">
           <div class="upgrade-info">
             <h3>🤖 Auto Miner Bot</h3>
             <p>Generates +2 coins per second</p>
@@ -68,30 +73,35 @@
           </div>
           <button class="buy-btn" onclick="buyBotUpgrade()">Buy</button>
         </div>
-
       </div>
     </section>
   </div>
 
-  <!-- YouTube Video Popup Modal -->
+  <!-- Video Popup Modal -->
   <div class="modal-overlay" id="video-modal">
     <div class="modal-content">
       <h2>⚡ Out of Energy!</h2>
-      <p>Watch this video for 1 minute to recharge 100 Energy!</p>
+      <p>Watch video for 60s (Countdown stops if paused)</p>
       
       <div class="video-container">
-        <!-- Replace YOUR_VIDEO_ID with your YouTube Video ID -->
-        <iframe id="yt-player" src="https://www.youtube.com/embed/YOUR_VIDEO_ID?enablejsapi=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <!-- Replace YOUR_VIDEO_ID with YouTube ID -->
+        <div id="player"></div>
       </div>
 
       <div class="timer-box">
-        Please wait: <span id="timer-count">60</span> seconds
+        Watch Time Left: <span id="timer-count">60</span>s
       </div>
 
-      <button class="claim-energy-btn" id="claim-energy-btn" disabled>Claim 100 Energy ⚡</button>
+      <div class="modal-buttons">
+        <button class="claim-energy-btn" id="claim-energy-btn" disabled>Claim 100 Energy ⚡</button>
+        <!-- Replace YOUR_VIDEO_ID in the href link below -->
+        <a id="like-btn" href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" target="_blank" class="like-btn">👍 Like Video (+500 Clicks)</a>
+      </div>
     </div>
   </div>
 
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="script.js"></script>
 </body>
 </html>
