@@ -35,7 +35,7 @@
     <section class="status-section">
       <div class="energy-container">
         <div class="energy-text">
-          ⚡ Energy: <span id="current-energy">1000</span> / <span id="max-energy">1000</span>
+          ⚡ Energy: <span id="current-energy">100</span> / <span id="max-energy">100</span>
         </div>
         <div class="energy-bar-bg">
           <div class="energy-bar-fill" id="energy-fill"></div>
@@ -69,18 +69,27 @@
           <button class="buy-btn" onclick="buyBotUpgrade()">Buy</button>
         </div>
 
-        <!-- Energy Capacity Boost -->
-        <div class="upgrade-card" id="upgrade-energy">
-          <div class="upgrade-info">
-            <h3>🔋 Max Energy Boost</h3>
-            <p>Increases max energy by +500</p>
-            <span class="cost">Cost: 🪙 <span id="energy-cost">100</span></span>
-          </div>
-          <button class="buy-btn" onclick="buyEnergyUpgrade()">Buy</button>
-        </div>
-
       </div>
     </section>
+  </div>
+
+  <!-- YouTube Video Popup Modal -->
+  <div class="modal-overlay" id="video-modal">
+    <div class="modal-content">
+      <h2>⚡ Out of Energy!</h2>
+      <p>Watch this video for 1 minute to recharge 100 Energy!</p>
+      
+      <div class="video-container">
+        <!-- Replace YOUR_VIDEO_ID with your YouTube Video ID -->
+        <iframe id="yt-player" src="https://www.youtube.com/embed/YOUR_VIDEO_ID?enablejsapi=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <div class="timer-box">
+        Please wait: <span id="timer-count">60</span> seconds
+      </div>
+
+      <button class="claim-energy-btn" id="claim-energy-btn" disabled>Claim 100 Energy ⚡</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
