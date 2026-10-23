@@ -44,10 +44,10 @@
       flex-direction: column;
       padding: 16px;
       gap: 16px;
-      padding-bottom: 100px;
+      padding-bottom: 110px;
     }
 
-    /* Ad Banner Styling */
+    /* Ad Banner Container Styling */
     .ad-banner {
       width: 100%;
       min-height: 50px;
@@ -320,9 +320,9 @@
 
   <div class="app-container">
     
-    <!-- Header Banner Ad (Top) -->
-    <div class="ad-banner" id="headerAdContainer">
-      <span>Header Banner Ad (Refreshes every 1 min)</span>
+    <!-- Monetag Header Banner (Top) -->
+    <div class="ad-banner" id="monetagHeaderAd">
+      <span>Header Ad Space</span>
     </div>
 
     <!-- Header -->
@@ -417,10 +417,8 @@
       </section>
     </div>
 
-    <!-- Footer Banner Ad (Bottom) -->
-    <div class="ad-banner" id="footerAdContainer">
-      <span>Footer Banner Ad (Refreshes every 1 min)</span>
-    </div>
+    <!-- Adsterra Footer Banner Ad (Bottom Container) -->
+    <div class="ad-banner" id="adsterraFooterAd"></div>
 
     <!-- Bottom Navigation -->
     <nav>
@@ -448,7 +446,7 @@
   </div>
 
   <script>
-    // Anti-Inspect / Basic Security Block
+    // Security Block
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
       if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
@@ -456,7 +454,6 @@
       }
     };
 
-    // Game State Object
     let gameState = {
       coins: 0,
       tapPower: 1,
@@ -483,7 +480,7 @@
         }
       }
       updateUI();
-      loadBannerAds(); // Load ads on start
+      loadAdsterraFooterAd(); // Footer ad load
     }
 
     function saveGame() {
@@ -502,30 +499,46 @@
       }
     }
 
-    // Banner Ads Auto-Refresh Logic (Every 1 Minute / 60,000 ms)
-    function loadBannerAds() {
-      const headerContainer = document.getElementById('headerAdContainer');
-      const footerContainer = document.getElementById('footerAdContainer');
+    // Adsterra Footer Ad Injection (Auto Refreshes Every 60s)
+    function loadAdsterraFooterAd() {
+      const footerContainer = document.getElementById('adsterraFooterAd');
+      footerContainer.innerHTML = ''; // Clear container
 
-      // Yahan aap apne banner ad network (jaise Monetag banner code ya iframe) ka code daal sakte hain.
-      // Auto refresh ke liye hum containers ko re-render ya script reload karenge.
-      
-      headerContainer.innerHTML = `<iframe src="about:blank" style="width:100%; height:50px; border:none;" scrolling="no"></iframe>`;
-      footerContainer.innerHTML = `<iframe src="about:blank" style="width:100%; height:50px; border:none;" scrolling="no"></iframe>`;
-      
-      // Agar aap Monetag ka banner tag use kar rahe hain, toh script element create karke append kar sakte hain:
-      /*
-      headerContainer.innerHTML = '';
-      const scriptH = document.createElement('script');
-      scriptH.src = 'YOUR_MONETAG_BANNER_SCRIPT_URL';
-      headerContainer.appendChild(scriptH);
-      */
+      // Create Iframe for Adsterra 320x50 Banner
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '320px';
+      iframe.style.height = '50px';
+      iframe.style.border = 'none';
+      iframe.style.overflow = 'hidden';
+      iframe.scrolling = 'no';
+
+      footerContainer.appendChild(iframe);
+
+      const iframeDoc = iframe.contentWindow.document;
+      iframeDoc.open();
+      iframeDoc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><style>body{margin:0;padding:0;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head>
+        <body>
+          <script type="text/javascript">
+            atOptions = {
+              'key' : 'cfcbcba63ba4e9a7af1a0de1b06b4b31',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          <\/script>
+          <script type="text/javascript" src="https://bauval.org/22/cfcbcba63ba4e9a7af1a0de1b06b4b31"><\/script>
+        </body>
+        </html>
+      `);
+      iframeDoc.close();
     }
 
-    // 1 Minute (60,000 ms) timer for refreshing banner ads automatically
-    setInterval(() => {
-      loadBannerAds();
-    }, 60000);
+    // Auto-refresh footer Adsterra banner every 1 minute (60,000 ms)
+    setInterval(loadAdsterraFooterAd, 60000);
 
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
