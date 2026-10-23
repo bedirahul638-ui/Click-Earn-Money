@@ -1,107 +1,615 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Crypto Coin Clicker</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bronze Miner - Play & Earn</title>
+  <style>
+    :root {
+      --bg-color: #0d0f12;
+      --card-bg: #161920;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --text: #f3f4f6;
+      --text-dim: #9ca3af;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 16px;
+      padding-bottom: 80px;
+    }
+
+    /* Header Styling */
+    header {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .game-title {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .balance-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .coin-icon {
+      font-size: 2rem;
+    }
+
+    .balance-amount {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 16px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    /* Main Tap Area */
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .tap-button {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #f59e0b 0%, #78350f 100%);
+      border: 6px solid #fbbf24;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 5rem;
+      cursor: pointer;
+      transition: transform 0.05s ease;
+      touch-action: manipulation;
+    }
+
+    .tap-button:active {
+      transform: scale(0.92);
+    }
+
+    /* Floating +1 Text Animation */
+    .floating-text {
+      position: absolute;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+      z-index: 10;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-80px) scale(1.3);
+      }
+    }
+
+    /* Energy & Progress Bar */
+    .energy-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .energy-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #2a2e39;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #f59e0b, #10b981);
+      transition: width 0.2s ease;
+    }
+
+    /* Tabs & Content Sections */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .upgrade-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .upgrade-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #20242f;
+      padding: 12px;
+      border-radius: 12px;
+    }
+
+    .upgrade-info h4 {
+      font-size: 0.95rem;
+    }
+
+    .upgrade-info p {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .upgrade-btn {
+      background: var(--primary);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .upgrade-btn:disabled {
+      background: #4b5563;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* Navigation Bar */
+    nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      background: #111318;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      width: 90%;
+      max-width: 400px;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-btn {
+      background: var(--primary);
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #20242f;
+      color: white;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
-  <div class="game-container">
-    <!-- Header -->
-    <header class="game-header">
-      <div class="rank-badge" id="rank-name">Bronze Miner</div>
+
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header>
+      <div class="game-title">Bronze Miner</div>
       <div class="balance-container">
-        <span class="currency-icon">🪙</span>
-        <h1 id="coin-count">0</h1>
+        <span class="coin-icon">🪙</span>
+        <span class="balance-amount" id="coinCount">0</span>
       </div>
-      <div class="passive-income">
-        <span>Per Sec: +<span id="pps-count">0</span></span>
-        <span>Tap Power: +<span id="tpc-count">1</span></span>
+      <div class="stats-row">
+        <span>Per Sec: +<span id="perSecRate">0</span></span>
+        <span>Tap Power: +<span id="tapPower">1</span></span>
       </div>
     </header>
 
-    <!-- Coin Area -->
-    <main class="game-body">
-      <div class="coin-wrapper" id="coin-btn">
-        <div class="coin">
-          <div class="coin-inner">⚡</div>
-        </div>
-      </div>
+    <!-- Tap Area -->
+    <main id="tapArea">
+      <div class="tap-button" id="minerBtn">⚡</div>
     </main>
 
-    <!-- Energy Status -->
-    <section class="status-section">
-      <div class="energy-container">
-        <div class="energy-text">
-          ⚡ Energy: <span id="current-energy">100</span> / <span id="max-energy">100</span>
-        </div>
-        <div class="energy-bar-bg">
-          <div class="energy-bar-fill" id="energy-fill"></div>
-        </div>
+    <!-- Energy Section -->
+    <div class="energy-card">
+      <div class="energy-info">
+        <span>⚡ Energy</span>
+        <span><span id="currentEnergy">100</span> / <span id="maxEnergy">100</span></span>
       </div>
-      
-      <!-- Option To Recharge When Energy is 0 -->
-      <div class="recharge-options" id="recharge-box" style="display: none;">
-        <p class="wait-msg">Wait for 1 hour to recharge OR Watch Video</p>
-        <div class="timer-display">⏱️ Auto Recharge in: <span id="hourly-timer">60:00</span></div>
-        <button class="watch-ad-btn" onclick="openVideoModal()">📺 Watch Video to Recharge Instantly</button>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="energyFill"></div>
       </div>
+    </div>
 
-      <button class="daily-btn" id="daily-reward-btn">🎁 Claim Daily Bonus</button>
-    </section>
-
-    <!-- Upgrades -->
-    <section class="shop-section">
-      <h2>Upgrades & Miners</h2>
-      <div class="upgrades-list">
-        <div class="upgrade-card">
-          <div class="upgrade-info">
-            <h3>⚡ Multi-Tap</h3>
-            <p>Increases coins per click by +1</p>
-            <span class="cost">Cost: 🪙 <span id="tap-cost">10</span></span>
+    <!-- Main Views Tab System -->
+    <div id="viewContainer">
+      <!-- Upgrades Tab (Default) -->
+      <section id="upgradesTab" class="section-card">
+        <h3 class="section-title">Upgrades & Miners</h3>
+        <div class="upgrade-list">
+          
+          <div class="upgrade-item">
+            <div class="upgrade-info">
+              <h4>⚡ Multi-Tap</h4>
+              <p>+1 coin per tap</p>
+              <small>Cost: 🪙 <span id="multiTapCost">10</span></small>
+            </div>
+            <button class="upgrade-btn" id="buyMultiTapBtn" onclick="buyMultiTap()">Upgrade</button>
           </div>
-          <button class="buy-btn" onclick="buyTapUpgrade()">Buy</button>
-        </div>
 
-        <div class="upgrade-card">
-          <div class="upgrade-info">
-            <h3>🤖 Auto Miner Bot</h3>
-            <p>Generates +2 coins per second</p>
-            <span class="cost">Cost: 🪙 <span id="bot-cost">50</span></span>
+          <div class="upgrade-item">
+            <div class="upgrade-info">
+              <h4>🤖 Auto Miner Bot</h4>
+              <p>+2 coins per second</p>
+              <small>Cost: 🪙 <span id="autoMinerCost">50</span></small>
+            </div>
+            <button class="upgrade-btn" id="buyAutoMinerBtn" onclick="buyAutoMiner()">Upgrade</button>
           </div>
-          <button class="buy-btn" onclick="buyBotUpgrade()">Buy</button>
+
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Earn/Tasks Tab -->
+      <section id="earnTab" class="section-card" style="display: none;">
+        <h3 class="section-title">Earn Extra Coins</h3>
+        <div class="upgrade-list">
+          <div class="upgrade-item">
+            <div class="upgrade-info">
+              <h4>📺 Watch Rewarded Video</h4>
+              <p>Get full energy + 500 coins</p>
+            </div>
+            <button class="upgrade-btn" onclick="watchRewardedAd()">Watch</button>
+          </div>
+          <div class="upgrade-item">
+            <div class="upgrade-info">
+              <h4>👥 Invite Friends</h4>
+              <p>Get 1,000 coins per friend</p>
+            </div>
+            <button class="upgrade-btn" onclick="copyReferralLink()">Invite</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Wallet Tab -->
+      <section id="walletTab" class="section-card" style="display: none;">
+        <h3 class="section-title">Withdraw Balance</h3>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px;">
+          Rate: 10,000 Coins = ₹10 (Min Withdrawal: ₹50)
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <input type="text" id="upiInput" class="input-field" placeholder="Enter UPI ID (e.g. user@paytm)">
+          <button class="modal-btn" onclick="requestWithdrawal()">Request Withdrawal</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('upgradesTab', this)">
+        <span>🔨</span> Mine
+      </button>
+      <button class="nav-btn" onclick="switchTab('earnTab', this)">
+        <span>🎁</span> Earn
+      </button>
+      <button class="nav-btn" onclick="switchTab('walletTab', this)">
+        <span>👛</span> Wallet
+      </button>
+    </nav>
+
   </div>
 
-  <!-- Video Popup Modal -->
-  <div class="modal-overlay" id="video-modal">
+  <!-- Out of Energy Modal -->
+  <div class="modal" id="energyModal">
     <div class="modal-content">
       <h2>⚡ Out of Energy!</h2>
-      <p>Watch video for 60s (Countdown stops if paused)</p>
-      
-      <div class="video-container">
-        <!-- Replace YOUR_VIDEO_ID with YouTube ID -->
-        <div id="player"></div>
-      </div>
-
-      <div class="timer-box">
-        Watch Time Left: <span id="timer-count">60</span>s
-      </div>
-
-      <div class="modal-buttons">
-        <button class="claim-energy-btn" id="claim-energy-btn" disabled>Claim 100 Energy ⚡</button>
-        <!-- Replace YOUR_VIDEO_ID in the href link below -->
-        <a id="like-btn" href="https://www.youtube.com/watch?v=YOUR_VIDEO_ID" target="_blank" class="like-btn">👍 Like Video (+500 Clicks)</a>
-      </div>
+      <p>Wait for energy to recharge or watch a short video for full instant recharge!</p>
+      <button class="modal-btn" onclick="watchRewardedAd()">Watch Ad (+Full Energy)</button>
+      <button style="background: transparent; color: var(--text-dim); border: none;" onclick="closeModal()">Close</button>
     </div>
   </div>
 
-  <!-- YouTube IFrame API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="script.js"></script>
+  <script>
+    // Game State Object
+    let gameState = {
+      coins: 0,
+      tapPower: 1,
+      autoMinerRate: 0,
+      energy: 100,
+      maxEnergy: 100,
+      multiTapCost: 10,
+      autoMinerCost: 50,
+      lastSavedTime: Date.now()
+    };
+
+    // Security & Anti-Cheat Settings
+    let clickCount = 0;
+    let lastClickReset = Date.now();
+    const MAX_CLICKS_PER_SEC = 12;
+
+    // Load Data On Launch
+    function initGame() {
+      const savedData = localStorage.getItem('bronze_miner_save');
+      if (savedData) {
+        gameState = { ...gameState, ...JSON.parse(savedData) };
+        calculateOfflineEarnings();
+      }
+      updateUI();
+    }
+
+    // Save Data
+    function saveGame() {
+      gameState.lastSavedTime = Date.now();
+      localStorage.setItem('bronze_miner_save', JSON.stringify(gameState));
+    }
+    setInterval(saveGame, 5000);
+
+    // Offline Progress Calculation
+    function calculateOfflineEarnings() {
+      const now = Date.now();
+      const secondsAway = Math.floor((now - gameState.lastSavedTime) / 1000);
+      if (secondsAway > 0 && gameState.autoMinerRate > 0) {
+        const offlineCoins = secondsAway * gameState.autoMinerRate;
+        gameState.coins += offlineCoins;
+        alert(`Welcome back! Your Auto-Miner collected 🪙 ${offlineCoins} while you were away!`);
+      }
+    }
+
+    // Tap Handling Function
+    const minerBtn = document.getElementById('minerBtn');
+    minerBtn.addEventListener('click', (e) => {
+      const now = Date.now();
+
+      // Anti-Cheat Speed Check
+      if (now - lastClickReset > 1000) {
+        clickCount = 0;
+        lastClickReset = now;
+      }
+      clickCount++;
+
+      if (clickCount > MAX_CLICKS_PER_SEC) {
+        return; // Exceeded click rate limit
+      }
+
+      // Energy Check
+      if (gameState.energy <= 0) {
+        document.getElementById('energyModal').style.display = 'flex';
+        return;
+      }
+
+      // Process Tap
+      gameState.coins += gameState.tapPower;
+      gameState.energy -= 1;
+
+      // Haptic Vibration (Mobile)
+      if (navigator.vibrate) navigator.vibrate(25);
+
+      // Create Floating Visual Animation
+      createFloatingText(e.clientX, e.clientY, `+${gameState.tapPower}`);
+
+      updateUI();
+    });
+
+    // Floating Text Generator
+    function createFloatingText(x, y, text) {
+      const el = document.createElement('div');
+      el.className = 'floating-text';
+      el.innerText = text;
+      el.style.left = `${x - 20}px`;
+      el.style.top = `${y - 40}px`;
+      document.body.appendChild(el);
+
+      setTimeout(() => el.remove(), 800);
+    }
+
+    // Upgrade Logic
+    function buyMultiTap() {
+      if (gameState.coins >= gameState.multiTapCost) {
+        gameState.coins -= gameState.multiTapCost;
+        gameState.tapPower += 1;
+        gameState.multiTapCost = Math.floor(gameState.multiTapCost * 1.8);
+        updateUI();
+      }
+    }
+
+    function buyAutoMiner() {
+      if (gameState.coins >= gameState.autoMinerCost) {
+        gameState.coins -= gameState.autoMinerCost;
+        gameState.autoMinerRate += 2;
+        gameState.autoMinerCost = Math.floor(gameState.autoMinerCost * 2);
+        updateUI();
+      }
+    }
+
+    // Main UI Update Loop
+    function updateUI() {
+      document.getElementById('coinCount').innerText = Math.floor(gameState.coins);
+      document.getElementById('perSecRate').innerText = gameState.autoMinerRate;
+      document.getElementById('tapPower').innerText = gameState.tapPower;
+      document.getElementById('currentEnergy').innerText = gameState.energy;
+      document.getElementById('maxEnergy').innerText = gameState.maxEnergy;
+
+      // Energy Fill Bar
+      const fillPercentage = (gameState.energy / gameState.maxEnergy) * 100;
+      document.getElementById('energyFill').style.width = `${fillPercentage}%`;
+
+      // Upgrade Costs
+      document.getElementById('multiTapCost').innerText = gameState.multiTapCost;
+      document.getElementById('autoMinerCost').innerText = gameState.autoMinerCost;
+
+      // Button Disabling logic
+      document.getElementById('buyMultiTapBtn').disabled = gameState.coins < gameState.multiTapCost;
+      document.getElementById('buyAutoMinerBtn').disabled = gameState.coins < gameState.autoMinerCost;
+    }
+
+    // Game Loop (Per Second)
+    setInterval(() => {
+      // Auto Miner
+      if (gameState.autoMinerRate > 0) {
+        gameState.coins += gameState.autoMinerRate;
+      }
+
+      // Energy Regeneration (1 point per second)
+      if (gameState.energy < gameState.maxEnergy) {
+        gameState.energy += 1;
+      }
+
+      updateUI();
+    }, 1000);
+
+    // Tab Switching Navigation
+    function switchTab(tabId, btn) {
+      ['upgradesTab', 'earnTab', 'walletTab'].forEach(id => {
+        document.getElementById(id).style.display = id === tabId ? 'block' : 'none';
+      });
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    // Ads Mock Functionality
+    function watchRewardedAd() {
+      alert("Opening Video Ad... (Simulated)");
+      setTimeout(() => {
+        gameState.energy = gameState.maxEnergy;
+        gameState.coins += 500;
+        closeModal();
+        updateUI();
+        alert("Reward Added: +500 Coins & Full Energy!");
+      }, 2000);
+    }
+
+    function closeModal() {
+      document.getElementById('energyModal').style.display = 'none';
+    }
+
+    // Referral Copy System
+    function copyReferralLink() {
+      navigator.clipboard.writeText(window.location.href + "?ref=user123");
+      alert("Referral link copied to clipboard!");
+    }
+
+    // Withdrawal Request
+    function requestWithdrawal() {
+      const upi = document.getElementById('upiInput').value;
+      if (!upi.includes('@')) {
+        alert("Please enter a valid UPI ID.");
+        return;
+      }
+      if (gameState.coins < 50000) { // 50,000 coins = ₹50
+        alert("Minimum withdrawal limit is 50,000 coins (₹50).");
+        return;
+      }
+      alert(`Withdrawal request submitted for ${upi}! Processing time: 24 hours.`);
+    }
+
+    // Initialize Game State
+    window.onload = initGame;
+  </script>
 </body>
 </html>
