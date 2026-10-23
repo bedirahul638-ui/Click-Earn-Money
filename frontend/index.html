@@ -37,6 +37,32 @@
       overflow-x: hidden;
     }
 
+    /* Auth / Login Overlay */
+    #authOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color);
+      z-index: 200;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 400px;
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
     .app-container {
       width: 100%;
       max-width: 480px;
@@ -108,33 +134,56 @@
       color: var(--text-dim);
     }
 
-    /* Main Tap Area */
+    /* --- 3D Coin Design --- */
     main {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 10px 0;
-      position: relative;
+      margin: 15px 0;
+      perspective: 1000px;
     }
 
-    .tap-button {
-      width: 180px;
-      height: 180px;
+    .coin-3d-wrapper {
+      width: 190px;
+      height: 190px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease;
+      cursor: pointer;
+    }
+
+    .coin-3d {
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
-      background: radial-gradient(circle, #f59e0b 0%, #78350f 100%);
-      border: 6px solid #fbbf24;
-      box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+      background: radial-gradient(circle at 35% 35%, #ffd700 0%, #ff9900 50%, #78350f 100%);
+      box-shadow: 
+        0 10px 0 #854d0e,
+        0 15px 25px rgba(245, 158, 11, 0.5),
+        inset 0 4px 10px rgba(255, 255, 255, 0.8),
+        inset 0 -6px 12px rgba(0, 0, 0, 0.6);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 4.5rem;
-      cursor: pointer;
-      transition: transform 0.05s ease;
-      touch-action: manipulation;
+      position: relative;
+      border: 4px solid #fef08a;
     }
 
-    .tap-button:active {
-      transform: scale(0.92);
+    .coin-3d-inner {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 3px dashed rgba(255, 255, 255, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
+    }
+
+    .coin-3d-wrapper:active {
+      transform: scale(0.94) rotateX(10deg) translateY(6px);
     }
 
     /* Floating Text Animation */
@@ -159,7 +208,7 @@
       }
     }
 
-    /* Energy & Progress Bar */
+    /* Energy Bar */
     .energy-card {
       background: var(--card-bg);
       border-radius: 12px;
@@ -190,7 +239,7 @@
       transition: width 0.2s ease;
     }
 
-    /* Tabs & Content Sections */
+    /* Section & Cards */
     .section-card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -218,14 +267,8 @@
       border-radius: 12px;
     }
 
-    .upgrade-info h4 {
-      font-size: 0.95rem;
-    }
-
-    .upgrade-info p {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-    }
+    .upgrade-info h4 { font-size: 0.95rem; }
+    .upgrade-info p { font-size: 0.8rem; color: var(--text-dim); }
 
     .upgrade-btn {
       background: var(--primary);
@@ -242,6 +285,25 @@
       color: #9ca3af;
       cursor: not-allowed;
     }
+
+    /* Dashboard Specific Styles */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .dash-card {
+      background: #20242f;
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dash-card h4 { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 4px; }
+    .dash-card p { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
 
     /* Navigation Bar */
     nav {
@@ -263,7 +325,7 @@
       background: none;
       border: none;
       color: var(--text-dim);
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -271,11 +333,8 @@
       cursor: pointer;
     }
 
-    .nav-btn.active {
-      color: var(--primary);
-    }
+    .nav-btn.active { color: var(--primary); }
 
-    /* Modal Styling */
     .modal {
       display: none;
       position: fixed;
@@ -310,7 +369,7 @@
 
     .input-field {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
       border: 1px solid #374151;
       background: #20242f;
@@ -321,9 +380,20 @@
 </head>
 <body>
 
+  <!-- Login Overlay Screen -->
+  <div id="authOverlay">
+    <div class="auth-card">
+      <h2 style="color: var(--primary);">⚡ Bronze Miner</h2>
+      <p style="font-size: 0.85rem; color: var(--text-dim);">Enter your details to start playing & earning!</p>
+      <input type="text" id="usernameInput" class="input-field" placeholder="Enter Your Name">
+      <input type="text" id="userUpiInput" class="input-field" placeholder="Enter UPI ID (for payout)">
+      <button class="modal-btn" onclick="loginUser()">Start Mining 🚀</button>
+    </div>
+  </div>
+
   <div class="app-container">
     
-    <!-- Adsterra Header Banner Ad (Top Container) -->
+    <!-- Adsterra Header Banner Ad Container -->
     <div class="ad-banner" id="adsterraHeaderAd"></div>
 
     <!-- Header -->
@@ -339,9 +409,13 @@
       </div>
     </header>
 
-    <!-- Tap Area -->
+    <!-- 3D Tap Area -->
     <main id="tapArea">
-      <div class="tap-button" id="minerBtn">⚡</div>
+      <div class="coin-3d-wrapper" id="minerBtn">
+        <div class="coin-3d">
+          <div class="coin-3d-inner">⚡</div>
+        </div>
+      </div>
     </main>
 
     <!-- Energy Section -->
@@ -355,13 +429,13 @@
       </div>
     </div>
 
-    <!-- Main Views Tab System -->
+    <!-- Views Tab System -->
     <div id="viewContainer">
+      
       <!-- Upgrades Tab (Default) -->
       <section id="upgradesTab" class="section-card">
         <h3 class="section-title">Upgrades & Miners</h3>
         <div class="upgrade-list">
-          
           <div class="upgrade-item">
             <div class="upgrade-info">
               <h4>⚡ Multi-Tap</h4>
@@ -379,11 +453,10 @@
             </div>
             <button class="upgrade-btn" id="buyAutoMinerBtn" onclick="buyAutoMiner()">Upgrade</button>
           </div>
-
         </div>
       </section>
 
-      <!-- Earn/Recharge Tab -->
+      <!-- Earn Tab -->
       <section id="earnTab" class="section-card" style="display: none;">
         <h3 class="section-title">Earn & Recharge</h3>
         <div class="upgrade-list">
@@ -405,6 +478,32 @@
         </div>
       </section>
 
+      <!-- Dashboard Tab -->
+      <section id="dashboardTab" class="section-card" style="display: none;">
+        <h3 class="section-title">📊 User Dashboard</h3>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">User Profile: <b id="dashUserName" style="color:var(--text);">User</b></p>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-top:2px;">UPI: <b id="dashUserUpi" style="color:var(--primary);">Not set</b></p>
+        
+        <div class="dashboard-grid">
+          <div class="dash-card">
+            <h4>Lifetime Coins</h4>
+            <p id="dashTotalCoins">0</p>
+          </div>
+          <div class="dash-card">
+            <h4>Total Taps</h4>
+            <p id="dashTotalTaps">0</p>
+          </div>
+          <div class="dash-card">
+            <h4>Withdrawals</h4>
+            <p id="dashWithdrawCount">0</p>
+          </div>
+          <div class="dash-card">
+            <h4>Account Status</h4>
+            <p style="color: var(--accent-green); font-size: 0.95rem;">Active ✅</p>
+          </div>
+        </div>
+      </section>
+
       <!-- Wallet Tab -->
       <section id="walletTab" class="section-card" style="display: none;">
         <h3 class="section-title">Withdraw Balance</h3>
@@ -416,20 +515,24 @@
           <button class="modal-btn" onclick="requestWithdrawal()">Request Withdrawal</button>
         </div>
       </section>
+
     </div>
 
-    <!-- Monetag Footer Ad Banner (Bottom Link) -->
+    <!-- Monetag Footer Banner Ad -->
     <a href="https://uplcm.com/4/12101528" target="_blank" class="ad-banner" id="monetagFooterAd">
       🔥 Sponsored Deals & Offers 🔥
     </a>
 
-    <!-- Bottom Navigation -->
+    <!-- Navigation -->
     <nav>
       <button class="nav-btn active" onclick="switchTab('upgradesTab', this)">
         <span>🔨</span> Mine
       </button>
       <button class="nav-btn" onclick="switchTab('earnTab', this)">
         <span>🎁</span> Earn
+      </button>
+      <button class="nav-btn" onclick="switchTab('dashboardTab', this)">
+        <span>📊</span> Dashboard
       </button>
       <button class="nav-btn" onclick="switchTab('walletTab', this)">
         <span>👛</span> Wallet
@@ -438,7 +541,7 @@
 
   </div>
 
-  <!-- Out of Energy Modal -->
+  <!-- Modal -->
   <div class="modal" id="energyModal">
     <div class="modal-content">
       <h2>⚡ Out of Energy!</h2>
@@ -449,7 +552,7 @@
   </div>
 
   <script>
-    // Security Block
+    // Anti-Inspect Block
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
       if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
@@ -458,7 +561,12 @@
     };
 
     let gameState = {
+      user: "",
+      upi: "",
       coins: 0,
+      totalCoinsEarned: 0,
+      totalTaps: 0,
+      withdrawCount: 0,
       tapPower: 1,
       autoMinerRate: 0,
       energy: 100,
@@ -473,22 +581,42 @@
     const MAX_CLICKS_PER_SEC = 12;
 
     function initGame() {
-      const savedData = localStorage.getItem('bm_save_v1');
+      const savedData = localStorage.getItem('bm_save_v2');
       if (savedData) {
         try {
           gameState = { ...gameState, ...JSON.parse(atob(savedData)) };
+          if (gameState.user) {
+            document.getElementById('authOverlay').style.display = 'none';
+          }
           calculateOfflineEarnings();
         } catch(e) {
-          console.error("Save state corrupt, resetting.");
+          console.error("Save state corrupt.");
         }
       }
       updateUI();
-      loadAdsterraHeaderAd(); // Header ad load
+      loadAdsterraHeaderAd();
+    }
+
+    function loginUser() {
+      const name = document.getElementById('usernameInput').value.trim();
+      const upi = document.getElementById('userUpiInput').value.trim();
+
+      if (!name) {
+        alert("Please enter your name.");
+        return;
+      }
+
+      gameState.user = name;
+      gameState.upi = upi;
+      document.getElementById('upiInput').value = upi;
+      document.getElementById('authOverlay').style.display = 'none';
+      saveGame();
+      updateUI();
     }
 
     function saveGame() {
       gameState.lastSavedTime = Date.now();
-      localStorage.setItem('bm_save_v1', btoa(JSON.stringify(gameState)));
+      localStorage.setItem('bm_save_v2', btoa(JSON.stringify(gameState)));
     }
     setInterval(saveGame, 4000);
 
@@ -498,14 +626,14 @@
       if (secondsAway > 0 && gameState.autoMinerRate > 0) {
         const offlineCoins = secondsAway * gameState.autoMinerRate;
         gameState.coins += offlineCoins;
+        gameState.totalCoinsEarned += offlineCoins;
         alert(`Welcome back! Your Auto-Miner collected 🪙 ${offlineCoins} while you were away!`);
       }
     }
 
-    // Adsterra Header Ad Injection (Auto Refreshes Every 60s)
     function loadAdsterraHeaderAd() {
       const headerContainer = document.getElementById('adsterraHeaderAd');
-      headerContainer.innerHTML = ''; // Clear container
+      headerContainer.innerHTML = '';
 
       const iframe = document.createElement('iframe');
       iframe.style.width = '320px';
@@ -538,10 +666,9 @@
       `);
       iframeDoc.close();
     }
-
-    // Auto-refresh header Adsterra banner every 1 minute
     setInterval(loadAdsterraHeaderAd, 60000);
 
+    // 3D Tap Handle
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
       const now = Date.now();
@@ -560,6 +687,8 @@
       }
 
       gameState.coins += gameState.tapPower;
+      gameState.totalCoinsEarned += gameState.tapPower;
+      gameState.totalTaps += 1;
       gameState.energy -= 1;
 
       if (navigator.vibrate) navigator.vibrate(25);
@@ -611,11 +740,19 @@
 
       document.getElementById('buyMultiTapBtn').disabled = gameState.coins < gameState.multiTapCost;
       document.getElementById('buyAutoMinerBtn').disabled = gameState.coins < gameState.autoMinerCost;
+
+      // Dashboard Data Refresh
+      document.getElementById('dashUserName').innerText = gameState.user || "User";
+      document.getElementById('dashUserUpi').innerText = gameState.upi || "Not set";
+      document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned);
+      document.getElementById('dashTotalTaps').innerText = gameState.totalTaps;
+      document.getElementById('dashWithdrawCount').innerText = gameState.withdrawCount;
     }
 
     setInterval(() => {
       if (gameState.autoMinerRate > 0) {
         gameState.coins += gameState.autoMinerRate;
+        gameState.totalCoinsEarned += gameState.autoMinerRate;
       }
       if (gameState.energy < gameState.maxEnergy) {
         gameState.energy += 1;
@@ -624,7 +761,7 @@
     }, 1000);
 
     function switchTab(tabId, btn) {
-      ['upgradesTab', 'earnTab', 'walletTab'].forEach(id => {
+      ['upgradesTab', 'earnTab', 'dashboardTab', 'walletTab'].forEach(id => {
         document.getElementById(id).style.display = id === tabId ? 'block' : 'none';
       });
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -650,7 +787,7 @@
     }
 
     function copyReferralLink() {
-      navigator.clipboard.writeText(window.location.href + "?ref=user123");
+      navigator.clipboard.writeText(window.location.href + "?ref=" + (gameState.user || "user123"));
       alert("Referral link copied to clipboard!");
     }
 
@@ -664,6 +801,10 @@
         alert("Minimum withdrawal limit is 50,000 coins (₹50).");
         return;
       }
+      gameState.withdrawCount += 1;
+      gameState.coins -= 50000;
+      updateUI();
+      saveGame();
       alert(`Withdrawal request submitted for ${upi}! Processing time: 24 hours.`);
     }
 
