@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d0f12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Bronze Miner - Play & Earn</title>
   <style>
     :root {
@@ -116,7 +119,7 @@
       transform: scale(0.92);
     }
 
-    /* Floating +1 Text Animation */
+    /* Floating Text Animation */
     .floating-text {
       position: absolute;
       font-size: 1.8rem;
@@ -299,7 +302,7 @@
 
   <div class="app-container">
     
-    <!-- Top Header -->
+    <!-- Header -->
     <header>
       <div class="game-title">Bronze Miner</div>
       <div class="balance-container">
@@ -356,7 +359,7 @@
         </div>
       </section>
 
-      <!-- Earn/Tasks Tab -->
+      <!-- Earn/Recharge Tab -->
       <section id="earnTab" class="section-card" style="display: none;">
         <h3 class="section-title">Earn & Recharge</h3>
         <div class="upgrade-list">
@@ -367,10 +370,11 @@
             </div>
             <button class="upgrade-btn" onclick="watchRewardedAd()">Watch</button>
           </div>
+
           <div class="upgrade-item">
             <div class="upgrade-info">
               <h4>👥 Invite Friends</h4>
-              <p>Get 1,000 coins per friend</p>
+              <p>Get 🪙 1,000 coins per friend</p>
             </div>
             <button class="upgrade-btn" onclick="copyReferralLink()">Invite</button>
           </div>
@@ -416,7 +420,15 @@
   </div>
 
   <script>
-    // Game State Object
+    // Anti-Inspect / Basic Security Block
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.onkeydown = function(e) {
+      if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+        return false;
+      }
+    };
+
+    // Encrypted Game State Object
     let gameState = {
       coins: 0,
       tapPower: 1,
@@ -428,29 +440,33 @@
       lastSavedTime: Date.now()
     };
 
-    // Security & Anti-Cheat Settings
+    // Security Click Speed Settings
     let clickCount = 0;
     let lastClickReset = Date.now();
     const MAX_CLICKS_PER_SEC = 12;
 
-    // Load Data On Launch
+    // Load Saved Game
     function initGame() {
-      const savedData = localStorage.getItem('bronze_miner_save');
+      const savedData = localStorage.getItem('bm_save_v1');
       if (savedData) {
-        gameState = { ...gameState, ...JSON.parse(savedData) };
-        calculateOfflineEarnings();
+        try {
+          gameState = { ...gameState, ...JSON.parse(atob(savedData)) };
+          calculateOfflineEarnings();
+        } catch(e) {
+          console.error("Save state corrupt, resetting.");
+        }
       }
       updateUI();
     }
 
-    // Save Data
+    // Save Game with Base64 Encoding
     function saveGame() {
       gameState.lastSavedTime = Date.now();
-      localStorage.setItem('bronze_miner_save', JSON.stringify(gameState));
+      localStorage.setItem('bm_save_v1', btoa(JSON.stringify(gameState)));
     }
-    setInterval(saveGame, 5000);
+    setInterval(saveGame, 4000);
 
-    // Offline Progress Calculation
+    // Offline Earnings
     function calculateOfflineEarnings() {
       const now = Date.now();
       const secondsAway = Math.floor((now - gameState.lastSavedTime) / 1000);
@@ -461,42 +477,34 @@
       }
     }
 
-    // Tap Handling Function
+    // Tap Logic
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
       const now = Date.now();
 
-      // Anti-Cheat Speed Check
       if (now - lastClickReset > 1000) {
         clickCount = 0;
         lastClickReset = now;
       }
       clickCount++;
 
-      if (clickCount > MAX_CLICKS_PER_SEC) {
-        return; // Exceeded click rate limit
-      }
+      if (clickCount > MAX_CLICKS_PER_SEC) return;
 
-      // Energy Check
       if (gameState.energy <= 0) {
         document.getElementById('energyModal').style.display = 'flex';
         return;
       }
 
-      // Process Tap
       gameState.coins += gameState.tapPower;
       gameState.energy -= 1;
 
-      // Haptic Vibration (Mobile)
       if (navigator.vibrate) navigator.vibrate(25);
-
-      // Create Floating Visual Animation
       createFloatingText(e.clientX, e.clientY, `+${gameState.tapPower}`);
 
       updateUI();
     });
 
-    // Floating Text Generator
+    // Floating Animation
     function createFloatingText(x, y, text) {
       const el = document.createElement('div');
       el.className = 'floating-text';
@@ -504,11 +512,10 @@
       el.style.left = `${x - 20}px`;
       el.style.top = `${y - 40}px`;
       document.body.appendChild(el);
-
       setTimeout(() => el.remove(), 800);
     }
 
-    // Upgrade Logic
+    // Upgrades Logic
     function buyMultiTap() {
       if (gameState.coins >= gameState.multiTapCost) {
         gameState.coins -= gameState.multiTapCost;
@@ -527,7 +534,7 @@
       }
     }
 
-    // Main UI Update Loop
+    // UI Refresh
     function updateUI() {
       document.getElementById('coinCount').innerText = Math.floor(gameState.coins);
       document.getElementById('perSecRate').innerText = gameState.autoMinerRate;
@@ -535,35 +542,28 @@
       document.getElementById('currentEnergy').innerText = gameState.energy;
       document.getElementById('maxEnergy').innerText = gameState.maxEnergy;
 
-      // Energy Fill Bar
       const fillPercentage = (gameState.energy / gameState.maxEnergy) * 100;
       document.getElementById('energyFill').style.width = `${fillPercentage}%`;
 
-      // Upgrade Costs
       document.getElementById('multiTapCost').innerText = gameState.multiTapCost;
       document.getElementById('autoMinerCost').innerText = gameState.autoMinerCost;
 
-      // Button Disabling logic
       document.getElementById('buyMultiTapBtn').disabled = gameState.coins < gameState.multiTapCost;
       document.getElementById('buyAutoMinerBtn').disabled = gameState.coins < gameState.autoMinerCost;
     }
 
-    // Game Loop (Per Second)
+    // Main Timer Loop (1 sec)
     setInterval(() => {
-      // Auto Miner
       if (gameState.autoMinerRate > 0) {
         gameState.coins += gameState.autoMinerRate;
       }
-
-      // Energy Regeneration (1 point per second)
       if (gameState.energy < gameState.maxEnergy) {
         gameState.energy += 1;
       }
-
       updateUI();
     }, 1000);
 
-    // Tab Switching Navigation
+    // Tab Navigation
     function switchTab(tabId, btn) {
       ['upgradesTab', 'earnTab', 'walletTab'].forEach(id => {
         document.getElementById(id).style.display = id === tabId ? 'block' : 'none';
@@ -572,17 +572,14 @@
       btn.classList.add('active');
     }
 
-    // Real Ad Network Integration (Monetag Direct Link)
+    // Monetag Rewarded Flow
     function watchRewardedAd() {
       const adLink = "https://uplcm.com/4/12101517"; 
-
       window.open(adLink, '_blank');
-
       alert("Ad dekhne ke baad game par wapas aayein, aapki energy refill ho jayegi!");
 
-      // 4 Seconds baad full energy credit
       setTimeout(() => {
-        gameState.energy = gameState.maxEnergy; // Only Refill Energy
+        gameState.energy = gameState.maxEnergy;
         closeModal();
         updateUI();
         saveGame();
@@ -594,7 +591,7 @@
       document.getElementById('energyModal').style.display = 'none';
     }
 
-    // Referral Copy System
+    // Referral Copy
     function copyReferralLink() {
       navigator.clipboard.writeText(window.location.href + "?ref=user123");
       alert("Referral link copied to clipboard!");
@@ -607,14 +604,13 @@
         alert("Please enter a valid UPI ID.");
         return;
       }
-      if (gameState.coins < 50000) { // 50,000 coins = ₹50
+      if (gameState.coins < 50000) {
         alert("Minimum withdrawal limit is 50,000 coins (₹50).");
         return;
       }
       alert(`Withdrawal request submitted for ${upi}! Processing time: 24 hours.`);
     }
 
-    // Initialize Game State
     window.onload = initGame;
   </script>
 </body>
