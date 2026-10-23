@@ -58,8 +58,11 @@
       justify-content: center;
       align-items: center;
       overflow: hidden;
-      font-size: 0.75rem;
-      color: var(--text-dim);
+      font-size: 0.85rem;
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
     }
 
     /* Header Styling */
@@ -320,10 +323,10 @@
 
   <div class="app-container">
     
-    <!-- Monetag Header Banner (Top) -->
-    <div class="ad-banner" id="monetagHeaderAd">
-      <span>Header Ad Space</span>
-    </div>
+    <!-- Monetag Header Ad Banner (Top Link) -->
+    <a href="https://uplcm.com/4/12101528" target="_blank" class="ad-banner" id="monetagHeaderAd">
+      🔥 Sponsored Deals & Offers 🔥
+    </a>
 
     <!-- Header -->
     <header>
@@ -504,7 +507,6 @@
       const footerContainer = document.getElementById('adsterraFooterAd');
       footerContainer.innerHTML = ''; // Clear container
 
-      // Create Iframe for Adsterra 320x50 Banner
       const iframe = document.createElement('iframe');
       iframe.style.width = '320px';
       iframe.style.height = '50px';
@@ -537,7 +539,7 @@
       iframeDoc.close();
     }
 
-    // Auto-refresh footer Adsterra banner every 1 minute (60,000 ms)
+    // Auto-refresh footer Adsterra banner every 1 minute
     setInterval(loadAdsterraFooterAd, 60000);
 
     const minerBtn = document.getElementById('minerBtn');
