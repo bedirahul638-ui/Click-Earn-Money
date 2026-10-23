@@ -358,12 +358,12 @@
 
       <!-- Earn/Tasks Tab -->
       <section id="earnTab" class="section-card" style="display: none;">
-        <h3 class="section-title">Earn Extra Coins</h3>
+        <h3 class="section-title">Earn & Recharge</h3>
         <div class="upgrade-list">
           <div class="upgrade-item">
             <div class="upgrade-info">
-              <h4>📺 Watch Rewarded Video</h4>
-              <p>Get full energy + 500 coins</p>
+              <h4>📺 Watch Video Ad</h4>
+              <p>Get Full Instant Recharge (100⚡ Energy)</p>
             </div>
             <button class="upgrade-btn" onclick="watchRewardedAd()">Watch</button>
           </div>
@@ -409,9 +409,9 @@
   <div class="modal" id="energyModal">
     <div class="modal-content">
       <h2>⚡ Out of Energy!</h2>
-      <p>Wait for energy to recharge or watch a short video for full instant recharge!</p>
-      <button class="modal-btn" onclick="watchRewardedAd()">Watch Ad (+Full Energy)</button>
-      <button style="background: transparent; color: var(--text-dim); border: none;" onclick="closeModal()">Close</button>
+      <p>Wait for energy to recharge or watch a short video for full instant recharge (100⚡)!</p>
+      <button class="modal-btn" onclick="watchRewardedAd()">Watch Ad (+100 Energy)</button>
+      <button style="background: transparent; color: var(--text-dim); border: none; cursor: pointer;" onclick="closeModal()">Close</button>
     </div>
   </div>
 
@@ -572,16 +572,22 @@
       btn.classList.add('active');
     }
 
-    // Ads Mock Functionality
+    // Real Ad Network Integration (Monetag Direct Link)
     function watchRewardedAd() {
-      alert("Opening Video Ad... (Simulated)");
+      const adLink = "https://uplcm.com/4/12101517"; 
+
+      window.open(adLink, '_blank');
+
+      alert("Ad dekhne ke baad game par wapas aayein, aapki energy refill ho jayegi!");
+
+      // 4 Seconds baad full energy credit
       setTimeout(() => {
-        gameState.energy = gameState.maxEnergy;
-        gameState.coins += 500;
+        gameState.energy = gameState.maxEnergy; // Only Refill Energy
         closeModal();
         updateUI();
-        alert("Reward Added: +500 Coins & Full Energy!");
-      }, 2000);
+        saveGame();
+        alert("⚡ Energy Refilled! Total Energy: 100/100");
+      }, 4000);
     }
 
     function closeModal() {
