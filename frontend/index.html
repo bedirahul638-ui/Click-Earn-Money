@@ -37,8 +37,8 @@
       overflow-x: hidden;
     }
 
-    /* Auth / Login Overlay */
-    #authOverlay {
+    /* --- Landing & Auth Overlays --- */
+    .page-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color);
@@ -47,6 +47,7 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
+      overflow-y: auto;
     }
 
     .auth-card {
@@ -60,7 +61,44 @@
       text-align: center;
       display: flex;
       flex-direction: column;
+      gap: 12px;
+    }
+
+    .landing-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 400px;
+      padding: 28px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
       gap: 16px;
+    }
+
+    .landing-card h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+    }
+
+    .landing-card p {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      background: #20242f;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
     }
 
     .app-container {
@@ -286,7 +324,7 @@
       cursor: not-allowed;
     }
 
-    /* Dashboard Specific Styles */
+    /* Dashboard Styles */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -369,28 +407,71 @@
 
     .input-field {
       width: 100%;
-      padding: 12px;
+      padding: 10px 12px;
       border-radius: 8px;
       border: 1px solid #374151;
       background: #20242f;
       color: white;
-      font-size: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .link-btn {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-top: 4px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Login Overlay Screen -->
-  <div id="authOverlay">
-    <div class="auth-card">
-      <h2 style="color: var(--primary);">⚡ Bronze Miner</h2>
-      <p style="font-size: 0.85rem; color: var(--text-dim);">Enter your details to start playing & earning!</p>
-      <input type="text" id="usernameInput" class="input-field" placeholder="Enter Your Name">
-      <input type="text" id="userUpiInput" class="input-field" placeholder="Enter UPI ID (for payout)">
-      <button class="modal-btn" onclick="loginUser()">Start Mining 🚀</button>
+  <!-- 1. LANDING PAGE OVERLAY -->
+  <div id="landingOverlay" class="page-overlay">
+    <div class="landing-card">
+      <h1>⚡ Bronze Miner</h1>
+      <p>Tap karein, bronze coins mine karein, upgrades kharidein aur asani se real cash jeetein!</p>
+      
+      <div class="features-list">
+        <div>✨ Daily Tap & Earn Coins</div>
+        <div>🤖 Auto-Miner Bot Integration</div>
+        <div>⚡ Instant Energy Refill System</div>
+        <div>💸 Fast UPI Payouts (Min ₹50)</div>
+      </div>
+
+      <button class="modal-btn" onclick="showAuth('signup')">Get Started (Signup)</button>
+      <button class="link-btn" onclick="showAuth('login')">Already have an account? Login</button>
     </div>
   </div>
 
+  <!-- 2. AUTHENTICATION OVERLAY (FULL SIGNUP & LOGIN) -->
+  <div id="authOverlay" class="page-overlay" style="display: none;">
+    <div class="auth-card">
+      <h2 id="authTitle" style="color: var(--primary);">Create Account</h2>
+      <p id="authSubtitle" style="font-size: 0.8rem; color: var(--text-dim);">Fill details to register your account.</p>
+      
+      <!-- Signup Specific Fields -->
+      <div id="signupFields" style="display: flex; flex-direction: column; gap: 10px;">
+        <input type="text" id="regName" class="input-field" placeholder="Full Name">
+        <input type="email" id="regEmail" class="input-field" placeholder="Email Address">
+        <input type="tel" id="regPhone" class="input-field" placeholder="Phone Number">
+        <input type="password" id="regPassword" class="input-field" placeholder="Password">
+        <input type="password" id="regConfirmPassword" class="input-field" placeholder="Confirm Password">
+      </div>
+
+      <!-- Login Specific Fields -->
+      <div id="loginFields" style="display: none; flex-direction: column; gap: 10px;">
+        <input type="text" id="loginUserKey" class="input-field" placeholder="Email or Phone Number">
+        <input type="password" id="loginPassword" class="input-field" placeholder="Password">
+      </div>
+
+      <button class="modal-btn" id="authSubmitBtn" onclick="handleAuth()">Sign Up 🚀</button>
+      <button class="link-btn" onclick="backToLanding()">← Back to Home</button>
+    </div>
+  </div>
+
+  <!-- MAIN GAME CONTAINER -->
   <div class="app-container">
     
     <!-- Adsterra Header Banner Ad Container -->
@@ -481,8 +562,8 @@
       <!-- Dashboard Tab -->
       <section id="dashboardTab" class="section-card" style="display: none;">
         <h3 class="section-title">📊 User Dashboard</h3>
-        <p style="font-size: 0.85rem; color: var(--text-dim);">User Profile: <b id="dashUserName" style="color:var(--text);">User</b></p>
-        <p style="font-size: 0.85rem; color: var(--text-dim); margin-top:2px;">UPI: <b id="dashUserUpi" style="color:var(--primary);">Not set</b></p>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">User: <b id="dashUserName" style="color:var(--text);">User</b></p>
+        <p style="font-size: 0.8rem; color: var(--text-dim);">Email: <span id="dashUserEmail" style="color:var(--primary);">Not set</span></p>
         
         <div class="dashboard-grid">
           <div class="dash-card">
@@ -498,7 +579,7 @@
             <p id="dashWithdrawCount">0</p>
           </div>
           <div class="dash-card">
-            <h4>Account Status</h4>
+            <h4>Status</h4>
             <p style="color: var(--accent-green); font-size: 0.95rem;">Active ✅</p>
           </div>
         </div>
@@ -562,6 +643,9 @@
 
     let gameState = {
       user: "",
+      email: "",
+      phone: "",
+      password: "",
       upi: "",
       coins: 0,
       totalCoinsEarned: 0,
@@ -576,19 +660,22 @@
       lastSavedTime: Date.now()
     };
 
+    let authMode = 'signup';
     let clickCount = 0;
     let lastClickReset = Date.now();
     const MAX_CLICKS_PER_SEC = 12;
 
     function initGame() {
-      const savedData = localStorage.getItem('bm_save_v2');
+      const savedData = localStorage.getItem('bm_save_v4');
       if (savedData) {
         try {
           gameState = { ...gameState, ...JSON.parse(atob(savedData)) };
-          if (gameState.user) {
+          if (gameState.user && gameState.email) {
+            document.getElementById('landingOverlay').style.display = 'none';
             document.getElementById('authOverlay').style.display = 'none';
+            if (gameState.upi) document.getElementById('upiInput').value = gameState.upi;
+            calculateOfflineEarnings();
           }
-          calculateOfflineEarnings();
         } catch(e) {
           console.error("Save state corrupt.");
         }
@@ -597,18 +684,90 @@
       loadAdsterraHeaderAd();
     }
 
-    function loginUser() {
-      const name = document.getElementById('usernameInput').value.trim();
-      const upi = document.getElementById('userUpiInput').value.trim();
+    function showAuth(mode) {
+      authMode = mode;
+      document.getElementById('landingOverlay').style.display = 'none';
+      document.getElementById('authOverlay').style.display = 'flex';
 
-      if (!name) {
-        alert("Please enter your name.");
-        return;
+      const title = document.getElementById('authTitle');
+      const subtitle = document.getElementById('authSubtitle');
+      const btn = document.getElementById('authSubmitBtn');
+      const signupBox = document.getElementById('signupFields');
+      const loginBox = document.getElementById('loginFields');
+
+      if (mode === 'signup') {
+        title.innerText = "Create Account";
+        subtitle.innerText = "Fill details to register your account.";
+        btn.innerText = "Sign Up 🚀";
+        signupBox.style.display = 'flex';
+        loginBox.style.display = 'none';
+      } else {
+        title.innerText = "Welcome Back";
+        subtitle.innerText = "Enter Email/Phone & Password to login.";
+        btn.innerText = "Login ⚡";
+        signupBox.style.display = 'none';
+        loginBox.style.display = 'flex';
+      }
+    }
+
+    function backToLanding() {
+      document.getElementById('authOverlay').style.display = 'none';
+      document.getElementById('landingOverlay').style.display = 'flex';
+    }
+
+    function handleAuth() {
+      if (authMode === 'signup') {
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const pass = document.getElementById('regPassword').value;
+        const confirmPass = document.getElementById('regConfirmPassword').value;
+
+        if (!name || !email || !phone || !pass || !confirmPass) {
+          alert("Please fill all fields!");
+          return;
+        }
+
+        if (pass !== confirmPass) {
+          alert("Password and Confirm Password do not match!");
+          return;
+        }
+
+        gameState.user = name;
+        gameState.email = email;
+        gameState.phone = phone;
+        gameState.password = pass;
+
+      } else {
+        // Login Logic
+        const userKey = document.getElementById('loginUserKey').value.trim();
+        const pass = document.getElementById('loginPassword').value;
+
+        if (!userKey || !pass) {
+          alert("Please enter both Email/Phone and Password!");
+          return;
+        }
+
+        const savedData = localStorage.getItem('bm_save_v4');
+        if (savedData) {
+          const parsed = JSON.parse(atob(savedData));
+          if ((parsed.email === userKey || parsed.phone === userKey) && parsed.password === pass) {
+            gameState = { ...gameState, ...parsed };
+          } else if (parsed.password && parsed.password !== pass) {
+            alert("Incorrect password!");
+            return;
+          } else {
+            gameState.user = userKey.split('@')[0];
+            gameState.email = userKey;
+            gameState.password = pass;
+          }
+        } else {
+          gameState.user = userKey.split('@')[0];
+          gameState.email = userKey;
+          gameState.password = pass;
+        }
       }
 
-      gameState.user = name;
-      gameState.upi = upi;
-      document.getElementById('upiInput').value = upi;
       document.getElementById('authOverlay').style.display = 'none';
       saveGame();
       updateUI();
@@ -616,7 +775,7 @@
 
     function saveGame() {
       gameState.lastSavedTime = Date.now();
-      localStorage.setItem('bm_save_v2', btoa(JSON.stringify(gameState)));
+      localStorage.setItem('bm_save_v4', btoa(JSON.stringify(gameState)));
     }
     setInterval(saveGame, 4000);
 
@@ -743,7 +902,7 @@
 
       // Dashboard Data Refresh
       document.getElementById('dashUserName').innerText = gameState.user || "User";
-      document.getElementById('dashUserUpi').innerText = gameState.upi || "Not set";
+      document.getElementById('dashUserEmail').innerText = gameState.email || "Not set";
       document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned);
       document.getElementById('dashTotalTaps').innerText = gameState.totalTaps;
       document.getElementById('dashWithdrawCount').innerText = gameState.withdrawCount;
@@ -792,7 +951,7 @@
     }
 
     function requestWithdrawal() {
-      const upi = document.getElementById('upiInput').value;
+      const upi = document.getElementById('upiInput').value.trim();
       if (!upi.includes('@')) {
         alert("Please enter a valid UPI ID.");
         return;
@@ -801,6 +960,7 @@
         alert("Minimum withdrawal limit is 50,000 coins (₹50).");
         return;
       }
+      gameState.upi = upi;
       gameState.withdrawCount += 1;
       gameState.coins -= 50000;
       updateUI();
