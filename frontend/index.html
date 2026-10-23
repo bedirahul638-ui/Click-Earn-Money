@@ -44,7 +44,22 @@
       flex-direction: column;
       padding: 16px;
       gap: 16px;
-      padding-bottom: 80px;
+      padding-bottom: 100px;
+    }
+
+    /* Ad Banner Styling */
+    .ad-banner {
+      width: 100%;
+      min-height: 50px;
+      background: #1a1e29;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-size: 0.75rem;
+      color: var(--text-dim);
     }
 
     /* Header Styling */
@@ -95,13 +110,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 20px 0;
+      margin: 10px 0;
       position: relative;
     }
 
     .tap-button {
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
       background: radial-gradient(circle, #f59e0b 0%, #78350f 100%);
       border: 6px solid #fbbf24;
@@ -109,7 +124,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 5rem;
+      font-size: 4.5rem;
       cursor: pointer;
       transition: transform 0.05s ease;
       touch-action: manipulation;
@@ -229,6 +244,8 @@
     nav {
       position: fixed;
       bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
       width: 100%;
       max-width: 480px;
       background: #111318;
@@ -236,6 +253,7 @@
       justify-content: space-around;
       padding: 10px 0;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 50;
     }
 
     .nav-btn {
@@ -302,6 +320,11 @@
 
   <div class="app-container">
     
+    <!-- Header Banner Ad (Top) -->
+    <div class="ad-banner" id="headerAdContainer">
+      <span>Header Banner Ad (Refreshes every 1 min)</span>
+    </div>
+
     <!-- Header -->
     <header>
       <div class="game-title">Bronze Miner</div>
@@ -394,6 +417,11 @@
       </section>
     </div>
 
+    <!-- Footer Banner Ad (Bottom) -->
+    <div class="ad-banner" id="footerAdContainer">
+      <span>Footer Banner Ad (Refreshes every 1 min)</span>
+    </div>
+
     <!-- Bottom Navigation -->
     <nav>
       <button class="nav-btn active" onclick="switchTab('upgradesTab', this)">
@@ -428,7 +456,7 @@
       }
     };
 
-    // Encrypted Game State Object
+    // Game State Object
     let gameState = {
       coins: 0,
       tapPower: 1,
@@ -440,12 +468,10 @@
       lastSavedTime: Date.now()
     };
 
-    // Security Click Speed Settings
     let clickCount = 0;
     let lastClickReset = Date.now();
     const MAX_CLICKS_PER_SEC = 12;
 
-    // Load Saved Game
     function initGame() {
       const savedData = localStorage.getItem('bm_save_v1');
       if (savedData) {
@@ -457,16 +483,15 @@
         }
       }
       updateUI();
+      loadBannerAds(); // Load ads on start
     }
 
-    // Save Game with Base64 Encoding
     function saveGame() {
       gameState.lastSavedTime = Date.now();
       localStorage.setItem('bm_save_v1', btoa(JSON.stringify(gameState)));
     }
     setInterval(saveGame, 4000);
 
-    // Offline Earnings
     function calculateOfflineEarnings() {
       const now = Date.now();
       const secondsAway = Math.floor((now - gameState.lastSavedTime) / 1000);
@@ -477,7 +502,31 @@
       }
     }
 
-    // Tap Logic
+    // Banner Ads Auto-Refresh Logic (Every 1 Minute / 60,000 ms)
+    function loadBannerAds() {
+      const headerContainer = document.getElementById('headerAdContainer');
+      const footerContainer = document.getElementById('footerAdContainer');
+
+      // Yahan aap apne banner ad network (jaise Monetag banner code ya iframe) ka code daal sakte hain.
+      // Auto refresh ke liye hum containers ko re-render ya script reload karenge.
+      
+      headerContainer.innerHTML = `<iframe src="about:blank" style="width:100%; height:50px; border:none;" scrolling="no"></iframe>`;
+      footerContainer.innerHTML = `<iframe src="about:blank" style="width:100%; height:50px; border:none;" scrolling="no"></iframe>`;
+      
+      // Agar aap Monetag ka banner tag use kar rahe hain, toh script element create karke append kar sakte hain:
+      /*
+      headerContainer.innerHTML = '';
+      const scriptH = document.createElement('script');
+      scriptH.src = 'YOUR_MONETAG_BANNER_SCRIPT_URL';
+      headerContainer.appendChild(scriptH);
+      */
+    }
+
+    // 1 Minute (60,000 ms) timer for refreshing banner ads automatically
+    setInterval(() => {
+      loadBannerAds();
+    }, 60000);
+
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
       const now = Date.now();
@@ -504,7 +553,6 @@
       updateUI();
     });
 
-    // Floating Animation
     function createFloatingText(x, y, text) {
       const el = document.createElement('div');
       el.className = 'floating-text';
@@ -515,7 +563,6 @@
       setTimeout(() => el.remove(), 800);
     }
 
-    // Upgrades Logic
     function buyMultiTap() {
       if (gameState.coins >= gameState.multiTapCost) {
         gameState.coins -= gameState.multiTapCost;
@@ -534,7 +581,6 @@
       }
     }
 
-    // UI Refresh
     function updateUI() {
       document.getElementById('coinCount').innerText = Math.floor(gameState.coins);
       document.getElementById('perSecRate').innerText = gameState.autoMinerRate;
@@ -552,7 +598,6 @@
       document.getElementById('buyAutoMinerBtn').disabled = gameState.coins < gameState.autoMinerCost;
     }
 
-    // Main Timer Loop (1 sec)
     setInterval(() => {
       if (gameState.autoMinerRate > 0) {
         gameState.coins += gameState.autoMinerRate;
@@ -563,7 +608,6 @@
       updateUI();
     }, 1000);
 
-    // Tab Navigation
     function switchTab(tabId, btn) {
       ['upgradesTab', 'earnTab', 'walletTab'].forEach(id => {
         document.getElementById(id).style.display = id === tabId ? 'block' : 'none';
@@ -572,7 +616,6 @@
       btn.classList.add('active');
     }
 
-    // Monetag Rewarded Flow
     function watchRewardedAd() {
       const adLink = "https://uplcm.com/4/12101517"; 
       window.open(adLink, '_blank');
@@ -591,13 +634,11 @@
       document.getElementById('energyModal').style.display = 'none';
     }
 
-    // Referral Copy
     function copyReferralLink() {
       navigator.clipboard.writeText(window.location.href + "?ref=user123");
       alert("Referral link copied to clipboard!");
     }
 
-    // Withdrawal Request
     function requestWithdrawal() {
       const upi = document.getElementById('upiInput').value;
       if (!upi.includes('@')) {
