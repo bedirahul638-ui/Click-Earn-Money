@@ -431,7 +431,6 @@
     .dash-card h4 { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 4px; }
     .dash-card p { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
 
-    /* Locked Wallet Card Box */
     .locked-notice {
       background: rgba(239, 68, 68, 0.1);
       border: 1px dashed rgba(239, 68, 68, 0.4);
@@ -534,7 +533,6 @@
         </div>
       </div>
 
-      <!-- RULE HIGHLIGHT BOX -->
       <div class="rule-box">
         <h4>📋 Withdrawal Terms & Conditions:</h4>
         <p>1. User ko game me kam se kam <b>2 Month (60 Days)</b> active rehna zaroori hai.<br>
@@ -582,6 +580,8 @@
 
   <!-- MAIN GAME CONTAINER -->
   <div class="app-container">
+    
+    <!-- TOP ADSTERRA HEADER AD BANNER -->
     <div class="ad-banner" id="adsterraHeaderAd"></div>
 
     <header>
@@ -688,13 +688,11 @@
           🔒 <b>Rule:</b> Must be active for 60 days (2 months).
         </div>
 
-        <!-- DYNAMICALLY CONTROLLED UPI SECTION -->
         <div id="upiSection" style="display: flex; flex-direction: column; gap: 10px;">
           <input type="text" id="upiInput" class="input-field" placeholder="Enter UPI ID (e.g. user@paytm)">
           <button class="modal-btn" onclick="requestWithdrawal()">Request Withdrawal</button>
         </div>
 
-        <!-- LOCKED WALLET NOTICE (SHOWN IF < 60 DAYS) -->
         <div id="walletLockedNotice" class="locked-notice" style="display: none;">
           <h4>🔒 Wallet Input Locked</h4>
           <p>UPI ID enter karne ke liye aapko <b>60 Days (2 Months)</b> active rehna zaroori hai.<br>
@@ -702,6 +700,11 @@
         </div>
       </section>
     </div>
+
+    <!-- BOTTOM SPONSORED ADS BANNER -->
+    <a href="https://uplcm.com/4/12101528" target="_blank" class="ad-banner" id="monetagFooterAd">
+      🔥 Sponsored Deals & Offers 🔥
+    </a>
 
     <nav>
       <button class="nav-btn active" onclick="switchTab('upgradesTab', this)"><span>🔨</span> Mine</button>
@@ -790,6 +793,7 @@
         }
       }
       updateUI();
+      loadAdsterraHeaderAd();
     }
 
     function showAuth(mode) {
@@ -927,6 +931,43 @@
       }
     }
 
+    function loadAdsterraHeaderAd() {
+      const headerContainer = document.getElementById('adsterraHeaderAd');
+      headerContainer.innerHTML = '';
+
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '320px';
+      iframe.style.height = '50px';
+      iframe.style.border = 'none';
+      iframe.style.overflow = 'hidden';
+      iframe.scrolling = 'no';
+
+      headerContainer.appendChild(iframe);
+
+      const iframeDoc = iframe.contentWindow.document;
+      iframeDoc.open();
+      iframeDoc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><style>body{margin:0;padding:0;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head>
+        <body>
+          <script type="text/javascript">
+            atOptions = {
+              'key' : 'cfcbcba63ba4e9a7af1a0de1b06b4b31',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          <\/script>
+          <script type="text/javascript" src="https://bauval.org/22/cfcbcba63ba4e9a7af1a0de1b06b4b31"><\/script>
+        </body>
+        </html>
+      `);
+      iframeDoc.close();
+    }
+    setInterval(loadAdsterraHeaderAd, 60000);
+
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
       const now = Date.now();
@@ -999,7 +1040,6 @@
       document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned);
       document.getElementById('dashTotalTaps').innerText = gameState.totalTaps;
 
-      // Account Age & Wallet Visibility Control
       const now = Date.now();
       const created = gameState.createdTimestamp || now;
       const daysActive = Math.floor((now - created) / (1000 * 60 * 60 * 24)) + 1;
@@ -1011,7 +1051,6 @@
       const eligibilityElem = document.getElementById('dashEligibility');
 
       if (daysActive >= 60) {
-        // Unlock UPI Section
         upiSection.style.display = 'flex';
         lockedNotice.style.display = 'none';
 
@@ -1023,7 +1062,6 @@
           eligibilityElem.style.color = "var(--primary)";
         }
       } else {
-        // Keep UPI Section Hidden
         upiSection.style.display = 'none';
         lockedNotice.style.display = 'block';
 
