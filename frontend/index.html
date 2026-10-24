@@ -298,6 +298,26 @@
       gap: 12px;
     }
 
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 42px;
+    }
+
+    .eye-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-dim);
+    }
+
     /* Game UI Containers */
     .app-container {
       width: 100%;
@@ -350,12 +370,29 @@
     .balance-amount { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
     .stats-row { display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-dim); }
 
+    /* --- Countdown Timer Banner Above Coin --- */
+    .timer-banner {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: var(--accent-red);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
     /* 3D Tap Area */
     main {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      margin: 15px 0;
+      margin: 10px 0;
       perspective: 1000px;
     }
 
@@ -523,7 +560,6 @@
 
   <!-- 1. PROFESSIONAL FULL-SCREEN LANDING PAGE -->
   <div id="landingOverlay">
-    <!-- Navbar Header -->
     <div class="landing-nav">
       <div class="landing-logo">
         <span>⚡</span> BRONZE MINER
@@ -531,18 +567,15 @@
       <button class="nav-auth-btn" onclick="showAuth('login')">Login</button>
     </div>
 
-    <!-- Hero Section -->
     <div class="hero-section">
       <div class="badge-pill">🔥 #1 Tap To Earn Web App</div>
       <h1 class="hero-title">Tap. Mine Coins. <br><span>Earn Real UPI Cash.</span></h1>
-      <p class="hero-subtitle">Mines bronze coins effortlessly. Upgrade your mining bots, complete quick tasks, and withdraw cash directly to your UPI.</p>
+      <p class="hero-subtitle">Mine bronze coins effortlessly. Upgrade your tap power, complete quick tasks, and withdraw cash directly to your UPI.</p>
       
-      <!-- Interactive Floating Coin Preview -->
       <div class="hero-coin-preview">⚡</div>
 
       <button class="cta-btn-main" onclick="showAuth('signup')">Start Mining Free 🚀</button>
 
-      <!-- Stats Counter Bar -->
       <div class="stats-bar">
         <div class="stat-box">
           <h3>10K+</h3>
@@ -553,12 +586,11 @@
           <p>Paid Out</p>
         </div>
         <div class="stat-box">
-          <h3>24/7</h3>
-          <p>Auto Mining</p>
+          <h3>100%</h3>
+          <p>Fair Play</p>
         </div>
       </div>
 
-      <!-- Feature Highlights -->
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">⚡</div>
@@ -569,10 +601,10 @@
         </div>
 
         <div class="feature-card">
-          <div class="feature-icon">🤖</div>
+          <div class="feature-icon">🛡️</div>
           <div class="feature-info">
-            <h4>Auto-Miner Bot</h4>
-            <p>Earn coins automatically even while you sleep or offline.</p>
+            <h4>Anti Auto-Clicker</h4>
+            <p>Protected ecosystem ensuring fair mining earnings for all.</p>
           </div>
         </div>
 
@@ -585,7 +617,6 @@
         </div>
       </div>
 
-      <!-- How It Works Section -->
       <div class="how-section">
         <div class="section-head">How To Start Earning?</div>
         <div class="step-list">
@@ -595,7 +626,7 @@
           </div>
           <div class="step-item">
             <div class="step-num">2</div>
-            <div>Tap the 3D coin & buy upgrades to boost speed.</div>
+            <div>Tap the 3D coin & upgrade Multi-Tap power.</div>
           </div>
           <div class="step-item">
             <div class="step-num">3</div>
@@ -606,7 +637,7 @@
     </div>
   </div>
 
-  <!-- 2. AUTHENTICATION OVERLAY (FULL SIGNUP & LOGIN MODAL) -->
+  <!-- 2. AUTHENTICATION OVERLAY (STRICT LOGIN / SIGNUP WITH EYE ICON) -->
   <div id="authOverlay" class="page-overlay" style="display: none;">
     <div class="auth-card">
       <h2 id="authTitle" style="color: var(--primary);">Create Account</h2>
@@ -617,14 +648,26 @@
         <input type="text" id="regName" class="input-field" placeholder="Full Name">
         <input type="email" id="regEmail" class="input-field" placeholder="Email Address">
         <input type="tel" id="regPhone" class="input-field" placeholder="Phone Number">
-        <input type="password" id="regPassword" class="input-field" placeholder="Password">
-        <input type="password" id="regConfirmPassword" class="input-field" placeholder="Confirm Password">
+        
+        <div class="password-wrapper">
+          <input type="password" id="regPassword" class="input-field" placeholder="Password">
+          <span class="eye-icon" onclick="togglePassword('regPassword', this)">👁️</span>
+        </div>
+
+        <div class="password-wrapper">
+          <input type="password" id="regConfirmPassword" class="input-field" placeholder="Confirm Password">
+          <span class="eye-icon" onclick="togglePassword('regConfirmPassword', this)">👁️</span>
+        </div>
       </div>
 
       <!-- Login Fields -->
       <div id="loginFields" style="display: none; flex-direction: column; gap: 10px;">
         <input type="text" id="loginUserKey" class="input-field" placeholder="Email or Phone Number">
-        <input type="password" id="loginPassword" class="input-field" placeholder="Password">
+        
+        <div class="password-wrapper">
+          <input type="password" id="loginPassword" class="input-field" placeholder="Password">
+          <span class="eye-icon" onclick="togglePassword('loginPassword', this)">👁️</span>
+        </div>
       </div>
 
       <button class="modal-btn" id="authSubmitBtn" onclick="handleAuth()">Sign Up 🚀</button>
@@ -635,10 +678,8 @@
   <!-- MAIN GAME CONTAINER -->
   <div class="app-container">
     
-    <!-- Adsterra Header Banner Ad Container -->
     <div class="ad-banner" id="adsterraHeaderAd"></div>
 
-    <!-- Header -->
     <header>
       <div class="game-title">Bronze Miner</div>
       <div class="balance-container">
@@ -646,13 +687,17 @@
         <span class="balance-amount" id="coinCount">0</span>
       </div>
       <div class="stats-row">
-        <span>Per Sec: +<span id="perSecRate">0</span></span>
         <span>Tap Power: +<span id="tapPower">1</span></span>
       </div>
     </header>
 
-    <!-- 3D Tap Area -->
+    <!-- 3D Tap Area with Countdown Banner Above Coin -->
     <main id="tapArea">
+      <div class="timer-banner" id="refillTimerBanner" style="display: none;">
+        <span>⌛ Refill In:</span>
+        <span id="refillCountdownText">59m 59s</span>
+      </div>
+
       <div class="coin-3d-wrapper" id="minerBtn">
         <div class="coin-3d">
           <div class="coin-3d-inner">⚡</div>
@@ -660,7 +705,6 @@
       </div>
     </main>
 
-    <!-- Energy Section -->
     <div class="energy-card">
       <div class="energy-info">
         <span>⚡ Energy</span>
@@ -671,12 +715,9 @@
       </div>
     </div>
 
-    <!-- Views Tab System -->
     <div id="viewContainer">
-      
-      <!-- Upgrades Tab (Default) -->
       <section id="upgradesTab" class="section-card">
-        <h3 class="section-title">Upgrades & Miners</h3>
+        <h3 class="section-title">Upgrades</h3>
         <div class="upgrade-list">
           <div class="upgrade-item">
             <div class="upgrade-info">
@@ -686,28 +727,18 @@
             </div>
             <button class="upgrade-btn" id="buyMultiTapBtn" onclick="buyMultiTap()">Upgrade</button>
           </div>
-
-          <div class="upgrade-item">
-            <div class="upgrade-info">
-              <h4>🤖 Auto Miner Bot</h4>
-              <p>+2 coins per second</p>
-              <small>Cost: 🪙 <span id="autoMinerCost">50</span></small>
-            </div>
-            <button class="upgrade-btn" id="buyAutoMinerBtn" onclick="buyAutoMiner()">Upgrade</button>
-          </div>
         </div>
       </section>
 
-      <!-- Earn Tab -->
       <section id="earnTab" class="section-card" style="display: none;">
         <h3 class="section-title">Earn & Recharge</h3>
         <div class="upgrade-list">
           <div class="upgrade-item">
             <div class="upgrade-info">
               <h4>📺 Watch Video Ad</h4>
-              <p>Get Full Instant Recharge (100⚡ Energy)</p>
+              <p>Instant Full Refill (100⚡ Energy)</p>
             </div>
-            <button class="upgrade-btn" onclick="watchRewardedAd()">Watch</button>
+            <button class="upgrade-btn" onclick="watchRewardedAd()">Watch Ad</button>
           </div>
 
           <div class="upgrade-item">
@@ -720,7 +751,6 @@
         </div>
       </section>
 
-      <!-- Dashboard Tab -->
       <section id="dashboardTab" class="section-card" style="display: none;">
         <h3 class="section-title">📊 User Dashboard</h3>
         <p style="font-size: 0.85rem; color: var(--text-dim);">User: <b id="dashUserName" style="color:var(--text);">User</b></p>
@@ -744,9 +774,9 @@
             <p style="color: var(--accent-green); font-size: 0.95rem;">Active ✅</p>
           </div>
         </div>
+        <button class="modal-btn" style="margin-top:15px; background:#ef4444; color:white;" onclick="logoutUser()">Logout 🚪</button>
       </section>
 
-      <!-- Wallet Tab -->
       <section id="walletTab" class="section-card" style="display: none;">
         <h3 class="section-title">Withdraw Balance</h3>
         <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px;">
@@ -757,15 +787,12 @@
           <button class="modal-btn" onclick="requestWithdrawal()">Request Withdrawal</button>
         </div>
       </section>
-
     </div>
 
-    <!-- Monetag Footer Banner Ad -->
     <a href="https://uplcm.com/4/12101528" target="_blank" class="ad-banner" id="monetagFooterAd">
       🔥 Sponsored Deals & Offers 🔥
     </a>
 
-    <!-- Navigation -->
     <nav>
       <button class="nav-btn active" onclick="switchTab('upgradesTab', this)">
         <span>🔨</span> Mine
@@ -780,16 +807,14 @@
         <span>👛</span> Wallet
       </button>
     </nav>
-
   </div>
 
-  <!-- Modal -->
   <div class="modal" id="energyModal">
     <div class="modal-content">
       <h2>⚡ Out of Energy!</h2>
-      <p>Wait for energy to recharge or watch a short video for full instant recharge (100⚡)!</p>
-      <button class="modal-btn" onclick="watchRewardedAd()">Watch Ad (+100 Energy)</button>
-      <button style="background: transparent; color: var(--text-dim); border: none; cursor: pointer;" onclick="closeModal()">Close</button>
+      <p>100 Taps complete! Full energy refill me 1 hour lagega. Fast refill ke liye video ad dekhein!</p>
+      <button class="modal-btn" onclick="watchRewardedAd()">Watch Ad (Instant +100 Energy)</button>
+      <button style="background: transparent; color: var(--text-dim); border: none; cursor: pointer;" onclick="closeModal()">Close & Wait</button>
     </div>
   </div>
 
@@ -813,24 +838,44 @@
       totalTaps: 0,
       withdrawCount: 0,
       tapPower: 1,
-      autoMinerRate: 0,
       energy: 100,
       maxEnergy: 100,
       multiTapCost: 10,
-      autoMinerCost: 50,
       lastSavedTime: Date.now()
     };
 
     let authMode = 'signup';
-    let clickCount = 0;
-    let lastClickReset = Date.now();
-    const MAX_CLICKS_PER_SEC = 12;
+    
+    // Anti Auto-Clicker Mechanics
+    let clickTimestamps = [];
+    const MAX_CLICKS_PER_SEC = 9; 
+    const MIN_CLICK_INTERVAL = 45; 
+
+    function togglePassword(fieldId, icon) {
+      const field = document.getElementById(fieldId);
+      if (field.type === "password") {
+        field.type = "text";
+        icon.innerText = "👁️‍🗨️";
+      } else {
+        field.type = "password";
+        icon.innerText = "👁️";
+      }
+    }
+
+    function getRegisteredUsers() {
+      const users = localStorage.getItem('bm_users_db');
+      return users ? JSON.parse(atob(users)) : [];
+    }
+
+    function saveRegisteredUsers(usersArray) {
+      localStorage.setItem('bm_users_db', btoa(JSON.stringify(usersArray)));
+    }
 
     function initGame() {
-      const savedData = localStorage.getItem('bm_save_v4');
-      if (savedData) {
+      const session = localStorage.getItem('bm_current_session');
+      if (session) {
         try {
-          gameState = { ...gameState, ...JSON.parse(atob(savedData)) };
+          gameState = { ...gameState, ...JSON.parse(atob(session)) };
           if (gameState.user && gameState.email) {
             document.getElementById('landingOverlay').style.display = 'none';
             document.getElementById('authOverlay').style.display = 'none';
@@ -838,7 +883,7 @@
             calculateOfflineEarnings();
           }
         } catch(e) {
-          console.error("Save state corrupt.");
+          console.error("Session corrupt.");
         }
       }
       updateUI();
@@ -877,9 +922,11 @@
     }
 
     function handleAuth() {
+      const users = getRegisteredUsers();
+
       if (authMode === 'signup') {
         const name = document.getElementById('regName').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
+        const email = document.getElementById('regEmail').value.trim().toLowerCase();
         const phone = document.getElementById('regPhone').value.trim();
         const pass = document.getElementById('regPassword').value;
         const confirmPass = document.getElementById('regConfirmPassword').value;
@@ -894,13 +941,29 @@
           return;
         }
 
-        gameState.user = name;
-        gameState.email = email;
-        gameState.phone = phone;
-        gameState.password = pass;
+        const existingUser = users.find(u => u.email === email || u.phone === phone);
+        if (existingUser) {
+          alert("Account already exists with this Email or Phone! Please Login.");
+          showAuth('login');
+          return;
+        }
+
+        const newUserState = {
+          ...gameState,
+          user: name,
+          email: email,
+          phone: phone,
+          password: pass
+        };
+
+        users.push(newUserState);
+        saveRegisteredUsers(users);
+        gameState = newUserState;
+        saveGame();
+        alert("Account created successfully!");
 
       } else {
-        const userKey = document.getElementById('loginUserKey').value.trim();
+        const userKey = document.getElementById('loginUserKey').value.trim().toLowerCase();
         const pass = document.getElementById('loginPassword').value;
 
         if (!userKey || !pass) {
@@ -908,45 +971,56 @@
           return;
         }
 
-        const savedData = localStorage.getItem('bm_save_v4');
-        if (savedData) {
-          const parsed = JSON.parse(atob(savedData));
-          if ((parsed.email === userKey || parsed.phone === userKey) && parsed.password === pass) {
-            gameState = { ...gameState, ...parsed };
-          } else if (parsed.password && parsed.password !== pass) {
-            alert("Incorrect password!");
-            return;
-          } else {
-            gameState.user = userKey.split('@')[0];
-            gameState.email = userKey;
-            gameState.password = pass;
-          }
-        } else {
-          gameState.user = userKey.split('@')[0];
-          gameState.email = userKey;
-          gameState.password = pass;
+        const foundUser = users.find(u => (u.email === userKey || u.phone === userKey));
+
+        if (!foundUser) {
+          alert("Account not found! Please sign up first.");
+          return;
         }
+
+        if (foundUser.password !== pass) {
+          alert("Incorrect password! Please try again.");
+          return;
+        }
+
+        gameState = foundUser;
+        saveGame();
+        alert(`Welcome back, ${gameState.user}!`);
       }
 
       document.getElementById('authOverlay').style.display = 'none';
-      saveGame();
+      document.getElementById('landingOverlay').style.display = 'none';
       updateUI();
     }
 
     function saveGame() {
       gameState.lastSavedTime = Date.now();
-      localStorage.setItem('bm_save_v4', btoa(JSON.stringify(gameState)));
+      localStorage.setItem('bm_current_session', btoa(JSON.stringify(gameState)));
+
+      const users = getRegisteredUsers();
+      const idx = users.findIndex(u => u.email === gameState.email);
+      if (idx !== -1) {
+        users[idx] = gameState;
+        saveRegisteredUsers(users);
+      }
     }
     setInterval(saveGame, 4000);
+
+    function logoutUser() {
+      localStorage.removeItem('bm_current_session');
+      location.reload();
+    }
 
     function calculateOfflineEarnings() {
       const now = Date.now();
       const secondsAway = Math.floor((now - gameState.lastSavedTime) / 1000);
-      if (secondsAway > 0 && gameState.autoMinerRate > 0) {
-        const offlineCoins = secondsAway * gameState.autoMinerRate;
-        gameState.coins += offlineCoins;
-        gameState.totalCoinsEarned += offlineCoins;
-        alert(`Welcome back! Your Auto-Miner collected 🪙 ${offlineCoins} while you were away!`);
+
+      // Offline 1-Hour Energy Refill Calculation (36 seconds = +1 Energy)
+      if (secondsAway > 0 && gameState.energy < gameState.maxEnergy) {
+        const energyGained = Math.floor(secondsAway / 36);
+        if (energyGained > 0) {
+          gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + energyGained);
+        }
       }
     }
 
@@ -987,18 +1061,26 @@
     }
     setInterval(loadAdsterraHeaderAd, 60000);
 
-    // 3D Tap Handle
+    // Strict Tap Handler with Anti Auto-Clicker
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
       const now = Date.now();
 
-      if (now - lastClickReset > 1000) {
-        clickCount = 0;
-        lastClickReset = now;
+      if (clickTimestamps.length > 0) {
+        const lastClick = clickTimestamps[clickTimestamps.length - 1];
+        if (now - lastClick < MIN_CLICK_INTERVAL) {
+          alert("⚠️ Auto-clicker detected! Please tap manually.");
+          return;
+        }
       }
-      clickCount++;
 
-      if (clickCount > MAX_CLICKS_PER_SEC) return;
+      clickTimestamps.push(now);
+      clickTimestamps = clickTimestamps.filter(t => now - t < 1000);
+
+      if (clickTimestamps.length > MAX_CLICKS_PER_SEC) {
+        alert("⚠️ Too fast! Auto-clicker is strictly disabled.");
+        return;
+      }
 
       if (gameState.energy <= 0) {
         document.getElementById('energyModal').style.display = 'flex';
@@ -1035,18 +1117,8 @@
       }
     }
 
-    function buyAutoMiner() {
-      if (gameState.coins >= gameState.autoMinerCost) {
-        gameState.coins -= gameState.autoMinerCost;
-        gameState.autoMinerRate += 2;
-        gameState.autoMinerCost = Math.floor(gameState.autoMinerCost * 2);
-        updateUI();
-      }
-    }
-
     function updateUI() {
       document.getElementById('coinCount').innerText = Math.floor(gameState.coins);
-      document.getElementById('perSecRate').innerText = gameState.autoMinerRate;
       document.getElementById('tapPower').innerText = gameState.tapPower;
       document.getElementById('currentEnergy').innerText = gameState.energy;
       document.getElementById('maxEnergy').innerText = gameState.maxEnergy;
@@ -1055,28 +1127,42 @@
       document.getElementById('energyFill').style.width = `${fillPercentage}%`;
 
       document.getElementById('multiTapCost').innerText = gameState.multiTapCost;
-      document.getElementById('autoMinerCost').innerText = gameState.autoMinerCost;
-
       document.getElementById('buyMultiTapBtn').disabled = gameState.coins < gameState.multiTapCost;
-      document.getElementById('buyAutoMinerBtn').disabled = gameState.coins < gameState.autoMinerCost;
 
-      // Dashboard Data Refresh
       document.getElementById('dashUserName').innerText = gameState.user || "User";
       document.getElementById('dashUserEmail').innerText = gameState.email || "Not set";
       document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned);
       document.getElementById('dashTotalTaps').innerText = gameState.totalTaps;
       document.getElementById('dashWithdrawCount').innerText = gameState.withdrawCount;
+
+      // Countdown Timer Display Management Above Coin
+      const timerBanner = document.getElementById('refillTimerBanner');
+      if (gameState.energy < gameState.maxEnergy) {
+        timerBanner.style.display = 'flex';
+        const neededEnergy = gameState.maxEnergy - gameState.energy;
+        const totalSecondsRemaining = neededEnergy * 36; 
+        
+        const mins = Math.floor(totalSecondsRemaining / 60);
+        const secs = totalSecondsRemaining % 60;
+        document.getElementById('refillCountdownText').innerText = `${mins}m ${secs}s`;
+      } else {
+        timerBanner.style.display = 'none';
+      }
     }
 
+    // Natural 1-Hour Refill Timer Interval (+1 energy every 36 seconds)
     setInterval(() => {
-      if (gameState.autoMinerRate > 0) {
-        gameState.coins += gameState.autoMinerRate;
-        gameState.totalCoinsEarned += gameState.autoMinerRate;
-      }
       if (gameState.energy < gameState.maxEnergy) {
         gameState.energy += 1;
+        updateUI();
       }
-      updateUI();
+    }, 36000);
+
+    // Live UI Timer Refresh Interval
+    setInterval(() => {
+      if (gameState.energy < gameState.maxEnergy) {
+        updateUI();
+      }
     }, 1000);
 
     function switchTab(tabId, btn) {
@@ -1090,14 +1176,14 @@
     function watchRewardedAd() {
       const adLink = "https://uplcm.com/4/12101517"; 
       window.open(adLink, '_blank');
-      alert("Ad dekhne ke baad game par wapas aayein, aapki energy refill ho jayegi!");
+      alert("Ad dekhne ke baad game par wapas aayein, aapki energy instant 100/100 ho jayegi!");
 
       setTimeout(() => {
         gameState.energy = gameState.maxEnergy;
         closeModal();
         updateUI();
         saveGame();
-        alert("⚡ Energy Refilled! Total Energy: 100/100");
+        alert("⚡ Instant Energy Refilled! Total Energy: 100/100");
       }, 4000);
     }
 
