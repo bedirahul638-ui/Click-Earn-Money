@@ -39,7 +39,7 @@
       overflow-x: hidden;
     }
 
-    /* --- Professional Full-Screen Landing Page --- */
+    /* --- Landing Page Overlay --- */
     #landingOverlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -192,85 +192,6 @@
     .stat-box h3 { font-size: 1.1rem; color: var(--primary); font-weight: 800; }
     .stat-box p { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
 
-    .features-grid {
-      width: 100%;
-      max-width: 440px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .feature-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 16px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-align: left;
-    }
-
-    .feature-icon {
-      width: 44px;
-      height: 44px;
-      background: rgba(245, 158, 11, 0.1);
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-
-    .feature-info h4 { font-size: 0.95rem; color: var(--text); }
-    .feature-info p { font-size: 0.8rem; color: var(--text-dim); margin-top: 2px; }
-
-    .how-section {
-      width: 100%;
-      max-width: 440px;
-      margin-top: 20px;
-      text-align: left;
-    }
-
-    .section-head {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 12px;
-      padding-left: 4px;
-    }
-
-    .step-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .step-item {
-      background: #1a1e27;
-      padding: 12px 16px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.85rem;
-    }
-
-    .step-num {
-      width: 26px;
-      height: 26px;
-      background: var(--primary);
-      color: #000;
-      font-weight: bold;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 0.8rem;
-    }
-
     .rule-box {
       background: rgba(245, 158, 11, 0.08);
       border: 1px dashed rgba(245, 158, 11, 0.4);
@@ -280,10 +201,10 @@
       text-align: left;
     }
 
-    .rule-box h4 { color: var(--primary); font-size: 0.9rem; margin-bottom: 4px; }
-    .rule-box p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; }
+    .rule-box h4 { color: var(--primary); font-size: 0.9rem; margin-bottom: 6px; }
+    .rule-box p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
 
-    /* --- Auth Screen Overlay --- */
+    /* --- Auth Overlay --- */
     .page-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -330,7 +251,7 @@
       color: var(--text-dim);
     }
 
-    /* Game UI Containers */
+    /* --- Game UI Containers --- */
     .app-container {
       width: 100%;
       max-width: 480px;
@@ -510,6 +431,18 @@
     .dash-card h4 { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 4px; }
     .dash-card p { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
 
+    /* Locked Wallet Card Box */
+    .locked-notice {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px dashed rgba(239, 68, 68, 0.4);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .locked-notice h4 { color: var(--accent-red); font-size: 0.95rem; margin-bottom: 6px; }
+    .locked-notice p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; }
+
     nav {
       position: fixed;
       bottom: 0;
@@ -568,7 +501,7 @@
 </head>
 <body>
 
-  <!-- 1. PROFESSIONAL FULL-SCREEN LANDING PAGE -->
+  <!-- LANDING PAGE OVERLAY -->
   <div id="landingOverlay">
     <div class="landing-nav">
       <div class="landing-logo">
@@ -604,62 +537,19 @@
       <!-- RULE HIGHLIGHT BOX -->
       <div class="rule-box">
         <h4>📋 Withdrawal Terms & Conditions:</h4>
-        <p>User ko game me kam se kam <b>2 Month (60 Days)</b> active rehna zaroori hai. 2 Months complete hone ke baad aap <b>1,000 Coins = ₹1</b> ke rate par UPI Cash withdraw kar paenge (Min Withdrawal: <b>₹500 / 5,00,000 Coins</b>)!</p>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <div class="feature-info">
-            <h4>Fast Tap Engine</h4>
-            <p>High yield coins per tap with instant haptic vibration feed.</p>
-          </div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🛡️</div>
-          <div class="feature-info">
-            <h4>Anti Auto-Clicker</h4>
-            <p>Protected ecosystem ensuring fair mining earnings for all.</p>
-          </div>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">💸</div>
-          <div class="feature-info">
-            <h4>Instant UPI Payouts</h4>
-            <p>Withdraw earnings directly to Paytm, PhonePe or GooglePay.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="how-section">
-        <div class="section-head">How To Start Earning?</div>
-        <div class="step-list">
-          <div class="step-item">
-            <div class="step-num">1</div>
-            <div>Create account & stay active for 2 months.</div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">2</div>
-            <div>Tap 3D coin & collect maximum bronze coins.</div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">3</div>
-            <div>Reach 5,00,000 coins & withdraw ₹500 directly to UPI.</div>
-          </div>
-        </div>
+        <p>1. User ko game me kam se kam <b>2 Month (60 Days)</b> active rehna zaroori hai.<br>
+        2. Minimum Withdrawal Threshold: <b>5,00,000 Coins = ₹500</b><br>
+        3. Simple & Free payout processing directly to your UPI ID!</p>
       </div>
     </div>
   </div>
 
-  <!-- 2. AUTHENTICATION OVERLAY -->
+  <!-- AUTH OVERLAY -->
   <div id="authOverlay" class="page-overlay" style="display: none;">
     <div class="auth-card">
       <h2 id="authTitle" style="color: var(--primary);">Create Account</h2>
       <p id="authSubtitle" style="font-size: 0.8rem; color: var(--text-dim);">Fill details to register your account.</p>
       
-      <!-- Signup Fields -->
       <div id="signupFields" style="display: flex; flex-direction: column; gap: 10px;">
         <input type="text" id="regName" class="input-field" placeholder="Full Name">
         <input type="email" id="regEmail" class="input-field" placeholder="Email Address">
@@ -676,7 +566,6 @@
         </div>
       </div>
 
-      <!-- Login Fields -->
       <div id="loginFields" style="display: none; flex-direction: column; gap: 10px;">
         <input type="text" id="loginUserKey" class="input-field" placeholder="Email or Phone Number">
         
@@ -693,7 +582,6 @@
 
   <!-- MAIN GAME CONTAINER -->
   <div class="app-container">
-    
     <div class="ad-banner" id="adsterraHeaderAd"></div>
 
     <header>
@@ -794,38 +682,36 @@
 
       <section id="walletTab" class="section-card" style="display: none;">
         <h3 class="section-title">Withdraw Balance</h3>
-        <div style="background:#20242f; padding:12px; border-radius:10px; margin-bottom:12px; font-size:0.82rem; color:var(--text-dim); border:1px solid rgba(255,255,255,0.05);">
-          📌 <b>Exchange Rate:</b> 1,000 Coins = ₹1<br>
+        <div style="background:#20242f; padding:12px; border-radius:10px; margin-bottom:12px; font-size:0.82rem; color:var(--text-dim); border:1px solid rgba(255,255,255,0.05); line-height: 1.5;">
+          📌 <b>Rate:</b> 1,000 Coins = ₹1<br>
           💰 <b>Min Withdrawal:</b> ₹500 (5,00,000 Coins)<br>
-          🔒 <b>Condition:</b> Account must be 60 days old (2 months active).
+          🔒 <b>Rule:</b> Must be active for 60 days (2 months).
         </div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+
+        <!-- DYNAMICALLY CONTROLLED UPI SECTION -->
+        <div id="upiSection" style="display: flex; flex-direction: column; gap: 10px;">
           <input type="text" id="upiInput" class="input-field" placeholder="Enter UPI ID (e.g. user@paytm)">
           <button class="modal-btn" onclick="requestWithdrawal()">Request Withdrawal</button>
+        </div>
+
+        <!-- LOCKED WALLET NOTICE (SHOWN IF < 60 DAYS) -->
+        <div id="walletLockedNotice" class="locked-notice" style="display: none;">
+          <h4>🔒 Wallet Input Locked</h4>
+          <p>UPI ID enter karne ke liye aapko <b>60 Days (2 Months)</b> active rehna zaroori hai.<br>
+          Aapke Account Unlock hone me abhi <b id="remainingDaysCount" style="color: var(--primary);">60</b> din baaki hain.</p>
         </div>
       </section>
     </div>
 
-    <a href="https://uplcm.com/4/12101528" target="_blank" class="ad-banner" id="monetagFooterAd">
-      🔥 Sponsored Deals & Offers 🔥
-    </a>
-
     <nav>
-      <button class="nav-btn active" onclick="switchTab('upgradesTab', this)">
-        <span>🔨</span> Mine
-      </button>
-      <button class="nav-btn" onclick="switchTab('earnTab', this)">
-        <span>🎁</span> Earn
-      </button>
-      <button class="nav-btn" onclick="switchTab('dashboardTab', this)">
-        <span>📊</span> Dashboard
-      </button>
-      <button class="nav-btn" onclick="switchTab('walletTab', this)">
-        <span>👛</span> Wallet
-      </button>
+      <button class="nav-btn active" onclick="switchTab('upgradesTab', this)"><span>🔨</span> Mine</button>
+      <button class="nav-btn" onclick="switchTab('earnTab', this)"><span>🎁</span> Earn</button>
+      <button class="nav-btn" onclick="switchTab('dashboardTab', this)"><span>📊</span> Dashboard</button>
+      <button class="nav-btn" onclick="switchTab('walletTab', this)"><span>👛</span> Wallet</button>
     </nav>
   </div>
 
+  <!-- ENERGY MODAL -->
   <div class="modal" id="energyModal">
     <div class="modal-content">
       <h2>⚡ Out of Energy!</h2>
@@ -904,7 +790,6 @@
         }
       }
       updateUI();
-      loadAdsterraHeaderAd();
     }
 
     function showAuth(mode) {
@@ -1042,43 +927,6 @@
       }
     }
 
-    function loadAdsterraHeaderAd() {
-      const headerContainer = document.getElementById('adsterraHeaderAd');
-      headerContainer.innerHTML = '';
-
-      const iframe = document.createElement('iframe');
-      iframe.style.width = '320px';
-      iframe.style.height = '50px';
-      iframe.style.border = 'none';
-      iframe.style.overflow = 'hidden';
-      iframe.scrolling = 'no';
-
-      headerContainer.appendChild(iframe);
-
-      const iframeDoc = iframe.contentWindow.document;
-      iframeDoc.open();
-      iframeDoc.write(`
-        <!DOCTYPE html>
-        <html>
-        <head><style>body{margin:0;padding:0;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head>
-        <body>
-          <script type="text/javascript">
-            atOptions = {
-              'key' : 'cfcbcba63ba4e9a7af1a0de1b06b4b31',
-              'format' : 'iframe',
-              'height' : 50,
-              'width' : 320,
-              'params' : {}
-            };
-          <\/script>
-          <script type="text/javascript" src="https://bauval.org/22/cfcbcba63ba4e9a7af1a0de1b06b4b31"><\/script>
-        </body>
-        </html>
-      `);
-      iframeDoc.close();
-    }
-    setInterval(loadAdsterraHeaderAd, 60000);
-
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
       const now = Date.now();
@@ -1151,17 +999,37 @@
       document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned);
       document.getElementById('dashTotalTaps').innerText = gameState.totalTaps;
 
+      // Account Age & Wallet Visibility Control
       const now = Date.now();
       const created = gameState.createdTimestamp || now;
       const daysActive = Math.floor((now - created) / (1000 * 60 * 60 * 24)) + 1;
       document.getElementById('dashAccountAge').innerText = `${daysActive} Days`;
 
+      const upiSection = document.getElementById('upiSection');
+      const lockedNotice = document.getElementById('walletLockedNotice');
+      const remainingDaysElem = document.getElementById('remainingDaysCount');
       const eligibilityElem = document.getElementById('dashEligibility');
+
       if (daysActive >= 60) {
-        eligibilityElem.innerText = "Eligible ✅";
-        eligibilityElem.style.color = "var(--accent-green)";
+        // Unlock UPI Section
+        upiSection.style.display = 'flex';
+        lockedNotice.style.display = 'none';
+
+        if (gameState.coins >= 500000) {
+          eligibilityElem.innerText = "Eligible ✅";
+          eligibilityElem.style.color = "var(--accent-green)";
+        } else {
+          eligibilityElem.innerText = "Pending Coins";
+          eligibilityElem.style.color = "var(--primary)";
+        }
       } else {
+        // Keep UPI Section Hidden
+        upiSection.style.display = 'none';
+        lockedNotice.style.display = 'block';
+
         const remainingDays = 60 - daysActive;
+        remainingDaysElem.innerText = `${remainingDays}`;
+
         eligibilityElem.innerText = `Pending (${remainingDays}d left)`;
         eligibilityElem.style.color = "var(--primary)";
       }
@@ -1219,11 +1087,6 @@
       document.getElementById('energyModal').style.display = 'none';
     }
 
-    function copyReferralLink() {
-      navigator.clipboard.writeText(window.location.href + "?ref=" + (gameState.user || "user123"));
-      alert("Referral link copied to clipboard!");
-    }
-
     function requestWithdrawal() {
       const upi = document.getElementById('upiInput').value.trim();
       
@@ -1232,19 +1095,17 @@
       const daysActive = Math.floor((now - created) / (1000 * 60 * 60 * 24)) + 1;
 
       if (daysActive < 60) {
-        const remaining = 60 - daysActive;
-        alert(`🔒 Account Locked for Payout!\n\nAapko game me 2 month (60 days) active rehna compulsory hai. Aapke account ko pass hone me abhi ${remaining} din baaki hain.`);
+        alert("🔒 Wallet Locked! Account 60 days old hone ke baad hi unlock hoga.");
+        return;
+      }
+
+      if (gameState.coins < 500000) {
+        alert("Minimum withdrawal limit is 5,00,000 coins (₹500).");
         return;
       }
 
       if (!upi.includes('@')) {
         alert("Please enter a valid UPI ID.");
-        return;
-      }
-      
-      // Minimum Withdrawal Check: ₹500 = 5,00,000 Coins (Rate: 1,000 Coins = ₹1)
-      if (gameState.coins < 500000) {
-        alert("Minimum withdrawal limit is 5,00,000 coins (₹500).");
         return;
       }
 
@@ -1253,7 +1114,8 @@
       gameState.coins -= 500000;
       updateUI();
       saveGame();
-      alert(`Withdrawal request submitted for ${upi}! Processing time: 24 hours.`);
+
+      alert(`✅ Withdrawal Request Submitted Successfully!\n\nUPI ID: ${upi}\nAmount: ₹500\n\nAapka payout 24 hours ke andar process kar diya jayega.`);
     }
 
     window.onload = initGame;
