@@ -27,6 +27,7 @@
       padding: 0;
       user-select: none;
       -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -334,6 +335,8 @@
       transform-style: preserve-3d;
       transition: transform 0.1s ease;
       cursor: pointer;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .coin-3d {
@@ -351,6 +354,7 @@
       align-items: center;
       position: relative;
       border: 4px solid #fef08a;
+      pointer-events: none;
     }
 
     .coin-3d-inner {
@@ -423,8 +427,6 @@
       border-radius: 8px;
       cursor: pointer;
     }
-
-    .upgrade-btn:disabled { background: #4b5563; color: #9ca3af; cursor: not-allowed; }
 
     .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
     .dash-card { background: #20242f; padding: 14px; border-radius: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05); }
@@ -581,7 +583,6 @@
   <!-- MAIN GAME CONTAINER -->
   <div class="app-container">
     
-    <!-- TOP ADSTERRA HEADER AD BANNER -->
     <div class="ad-banner" id="adsterraHeaderAd"></div>
 
     <header>
@@ -620,15 +621,14 @@
 
     <div id="viewContainer">
       <section id="upgradesTab" class="section-card">
-        <h3 class="section-title">Upgrades</h3>
+        <h3 class="section-title">Energy Booster</h3>
         <div class="upgrade-list">
           <div class="upgrade-item">
             <div class="upgrade-info">
-              <h4>⚡ Multi-Tap</h4>
-              <p>+1 coin per tap</p>
-              <small>Cost: 🪙 <span id="multiTapCost">10</span></small>
+              <h4>📺 Watch Ad & Refill</h4>
+              <p>Instant Full Refill (+100 Energy)</p>
             </div>
-            <button class="upgrade-btn" id="buyMultiTapBtn" onclick="buyMultiTap()">Upgrade</button>
+            <button class="upgrade-btn" onclick="watchRewardedAd()">Watch Ad</button>
           </div>
         </div>
       </section>
@@ -701,7 +701,6 @@
       </section>
     </div>
 
-    <!-- BOTTOM SPONSORED ADS BANNER -->
     <a href="https://uplcm.com/4/12101528" target="_blank" class="ad-banner" id="monetagFooterAd">
       🔥 Sponsored Deals & Offers 🔥
     </a>
@@ -714,7 +713,6 @@
     </nav>
   </div>
 
-  <!-- ENERGY MODAL -->
   <div class="modal" id="energyModal">
     <div class="modal-content">
       <h2>⚡ Out of Energy!</h2>
@@ -725,7 +723,6 @@
   </div>
 
   <script>
-    // Security Block
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
       if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
@@ -746,7 +743,7 @@
       tapPower: 1,
       energy: 100,
       maxEnergy: 100,
-      multiTapCost: 10,
+      lastEnergyDrainTime: Date.now(),
       createdTimestamp: Date.now(),
       lastSavedTime: Date.now()
     };
@@ -782,6 +779,7 @@
         try {
           gameState = { ...gameState, ...JSON.parse(atob(session)) };
           if (!gameState.createdTimestamp) gameState.createdTimestamp = Date.now();
+          if (!gameState.lastEnergyDrainTime) gameState.lastEnergyDrainTime = Date.now();
           if (gameState.user && gameState.email) {
             document.getElementById('landingOverlay').style.display = 'none';
             document.getElementById('authOverlay').style.display = 'none';
@@ -860,7 +858,8 @@
           email: email,
           phone: phone,
           password: pass,
-          createdTimestamp: Date.now()
+          createdTimestamp: Date.now(),
+          lastEnergyDrainTime: Date.now()
         };
 
         users.push(newUserState);
@@ -892,6 +891,7 @@
 
         gameState = foundUser;
         if (!gameState.createdTimestamp) gameState.createdTimestamp = Date.now();
+        if (!gameState.lastEnergyDrainTime) gameState.lastEnergyDrainTime = Date.now();
         saveGame();
         alert(`Welcome back, ${gameState.user}!`);
       }
@@ -997,6 +997,7 @@
       gameState.totalCoinsEarned += gameState.tapPower;
       gameState.totalTaps += 1;
       gameState.energy -= 1;
+      gameState.lastEnergyDrainTime = Date.now();
 
       if (navigator.vibrate) navigator.vibrate(25);
       createFloatingText(e.clientX, e.clientY, `+${gameState.tapPower}`);
@@ -1014,15 +1015,6 @@
       setTimeout(() => el.remove(), 800);
     }
 
-    function buyMultiTap() {
-      if (gameState.coins >= gameState.multiTapCost) {
-        gameState.coins -= gameState.multiTapCost;
-        gameState.tapPower += 1;
-        gameState.multiTapCost = Math.floor(gameState.multiTapCost * 1.8);
-        updateUI();
-      }
-    }
-
     function updateUI() {
       document.getElementById('coinCount').innerText = Math.floor(gameState.coins);
       document.getElementById('tapPower').innerText = gameState.tapPower;
@@ -1031,9 +1023,6 @@
 
       const fillPercentage = (gameState.energy / gameState.maxEnergy) * 100;
       document.getElementById('energyFill').style.width = `${fillPercentage}%`;
-
-      document.getElementById('multiTapCost').innerText = gameState.multiTapCost;
-      document.getElementById('buyMultiTapBtn').disabled = gameState.coins < gameState.multiTapCost;
 
       document.getElementById('dashUserName').innerText = gameState.user || "User";
       document.getElementById('dashUserEmail').innerText = gameState.email || "Not set";
@@ -1072,30 +1061,42 @@
         eligibilityElem.style.color = "var(--primary)";
       }
 
+      updateLiveCountdown();
+    }
+
+    function updateLiveCountdown() {
       const timerBanner = document.getElementById('refillTimerBanner');
       if (gameState.energy < gameState.maxEnergy) {
         timerBanner.style.display = 'flex';
-        const neededEnergy = gameState.maxEnergy - gameState.energy;
-        const totalSecondsRemaining = neededEnergy * 36; 
         
-        const mins = Math.floor(totalSecondsRemaining / 60);
-        const secs = totalSecondsRemaining % 60;
-        document.getElementById('refillCountdownText').innerText = `${mins}m ${secs}s`;
+        const neededEnergy = gameState.maxEnergy - gameState.energy;
+        const totalSecsNeeded = neededEnergy * 36;
+        
+        const elapsedSecs = Math.floor((Date.now() - (gameState.lastEnergyDrainTime || Date.now())) / 1000);
+        const remainingSecs = Math.max(0, totalSecsNeeded - elapsedSecs);
+
+        const mins = Math.floor(remainingSecs / 60);
+        const secs = remainingSecs % 60;
+        
+        document.getElementById('refillCountdownText').innerText = `${mins}m ${secs < 10 ? '0' + secs : secs}s`;
       } else {
         timerBanner.style.display = 'none';
       }
     }
 
+    // Auto Energy Passive Regeneration System
     setInterval(() => {
       if (gameState.energy < gameState.maxEnergy) {
         gameState.energy += 1;
+        gameState.lastEnergyDrainTime = Date.now();
         updateUI();
       }
     }, 36000);
 
+    // Live Second-by-Second Countdown Updater
     setInterval(() => {
       if (gameState.energy < gameState.maxEnergy) {
-        updateUI();
+        updateLiveCountdown();
       }
     }, 1000);
 
