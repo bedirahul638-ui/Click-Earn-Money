@@ -271,6 +271,18 @@
       font-size: 0.8rem;
     }
 
+    .rule-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px dashed rgba(245, 158, 11, 0.4);
+      padding: 14px;
+      border-radius: 14px;
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    .rule-box h4 { color: var(--primary); font-size: 0.9rem; margin-bottom: 4px; }
+    .rule-box p { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; }
+
     /* --- Auth Screen Overlay --- */
     .page-overlay {
       position: fixed;
@@ -370,7 +382,6 @@
     .balance-amount { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
     .stats-row { display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-dim); }
 
-    /* --- Countdown Timer Banner Above Coin --- */
     .timer-banner {
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.4);
@@ -386,7 +397,6 @@
       margin-bottom: 6px;
     }
 
-    /* 3D Tap Area */
     main {
       display: flex;
       flex-direction: column;
@@ -591,6 +601,12 @@
         </div>
       </div>
 
+      <!-- RULE HIGHLIGHT BOX -->
+      <div class="rule-box">
+        <h4>📋 Withdrawal Terms & Conditions:</h4>
+        <p>User ko game me kam se kam <b>2 Month (60 Days)</b> active rehna zaroori hai. 2 Months complete hone ke baad aap <b>1,000 Coins = ₹1</b> ke rate par UPI Cash withdraw kar paenge (Min Withdrawal: <b>₹500 / 5,00,000 Coins</b>)!</p>
+      </div>
+
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">⚡</div>
@@ -622,22 +638,22 @@
         <div class="step-list">
           <div class="step-item">
             <div class="step-num">1</div>
-            <div>Create your account in under 30 seconds.</div>
+            <div>Create account & stay active for 2 months.</div>
           </div>
           <div class="step-item">
             <div class="step-num">2</div>
-            <div>Tap the 3D coin & upgrade Multi-Tap power.</div>
+            <div>Tap 3D coin & collect maximum bronze coins.</div>
           </div>
           <div class="step-item">
             <div class="step-num">3</div>
-            <div>Reach 50,000 coins and withdraw ₹50 directly.</div>
+            <div>Reach 5,00,000 coins & withdraw ₹500 directly to UPI.</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 2. AUTHENTICATION OVERLAY (STRICT LOGIN / SIGNUP WITH EYE ICON) -->
+  <!-- 2. AUTHENTICATION OVERLAY -->
   <div id="authOverlay" class="page-overlay" style="display: none;">
     <div class="auth-card">
       <h2 id="authTitle" style="color: var(--primary);">Create Account</h2>
@@ -691,7 +707,6 @@
       </div>
     </header>
 
-    <!-- 3D Tap Area with Countdown Banner Above Coin -->
     <main id="tapArea">
       <div class="timer-banner" id="refillTimerBanner" style="display: none;">
         <span>⌛ Refill In:</span>
@@ -766,12 +781,12 @@
             <p id="dashTotalTaps">0</p>
           </div>
           <div class="dash-card">
-            <h4>Withdrawals</h4>
-            <p id="dashWithdrawCount">0</p>
+            <h4>Account Age</h4>
+            <p id="dashAccountAge">1 Days</p>
           </div>
           <div class="dash-card">
-            <h4>Status</h4>
-            <p style="color: var(--accent-green); font-size: 0.95rem;">Active ✅</p>
+            <h4>Payout Status</h4>
+            <p id="dashEligibility" style="color: var(--primary); font-size: 0.85rem;">Checking...</p>
           </div>
         </div>
         <button class="modal-btn" style="margin-top:15px; background:#ef4444; color:white;" onclick="logoutUser()">Logout 🚪</button>
@@ -779,9 +794,11 @@
 
       <section id="walletTab" class="section-card" style="display: none;">
         <h3 class="section-title">Withdraw Balance</h3>
-        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px;">
-          Rate: 10,000 Coins = ₹10 (Min Withdrawal: ₹50)
-        </p>
+        <div style="background:#20242f; padding:12px; border-radius:10px; margin-bottom:12px; font-size:0.82rem; color:var(--text-dim); border:1px solid rgba(255,255,255,0.05);">
+          📌 <b>Exchange Rate:</b> 1,000 Coins = ₹1<br>
+          💰 <b>Min Withdrawal:</b> ₹500 (5,00,000 Coins)<br>
+          🔒 <b>Condition:</b> Account must be 60 days old (2 months active).
+        </div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
           <input type="text" id="upiInput" class="input-field" placeholder="Enter UPI ID (e.g. user@paytm)">
           <button class="modal-btn" onclick="requestWithdrawal()">Request Withdrawal</button>
@@ -819,7 +836,7 @@
   </div>
 
   <script>
-    // Anti-Inspect Block
+    // Security Block
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
       if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
@@ -841,12 +858,11 @@
       energy: 100,
       maxEnergy: 100,
       multiTapCost: 10,
+      createdTimestamp: Date.now(),
       lastSavedTime: Date.now()
     };
 
     let authMode = 'signup';
-    
-    // Anti Auto-Clicker Mechanics
     let clickTimestamps = [];
     const MAX_CLICKS_PER_SEC = 9; 
     const MIN_CLICK_INTERVAL = 45; 
@@ -876,6 +892,7 @@
       if (session) {
         try {
           gameState = { ...gameState, ...JSON.parse(atob(session)) };
+          if (!gameState.createdTimestamp) gameState.createdTimestamp = Date.now();
           if (gameState.user && gameState.email) {
             document.getElementById('landingOverlay').style.display = 'none';
             document.getElementById('authOverlay').style.display = 'none';
@@ -953,7 +970,8 @@
           user: name,
           email: email,
           phone: phone,
-          password: pass
+          password: pass,
+          createdTimestamp: Date.now()
         };
 
         users.push(newUserState);
@@ -984,6 +1002,7 @@
         }
 
         gameState = foundUser;
+        if (!gameState.createdTimestamp) gameState.createdTimestamp = Date.now();
         saveGame();
         alert(`Welcome back, ${gameState.user}!`);
       }
@@ -1015,7 +1034,6 @@
       const now = Date.now();
       const secondsAway = Math.floor((now - gameState.lastSavedTime) / 1000);
 
-      // Offline 1-Hour Energy Refill Calculation (36 seconds = +1 Energy)
       if (secondsAway > 0 && gameState.energy < gameState.maxEnergy) {
         const energyGained = Math.floor(secondsAway / 36);
         if (energyGained > 0) {
@@ -1061,7 +1079,6 @@
     }
     setInterval(loadAdsterraHeaderAd, 60000);
 
-    // Strict Tap Handler with Anti Auto-Clicker
     const minerBtn = document.getElementById('minerBtn');
     minerBtn.addEventListener('click', (e) => {
       const now = Date.now();
@@ -1133,9 +1150,22 @@
       document.getElementById('dashUserEmail').innerText = gameState.email || "Not set";
       document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned);
       document.getElementById('dashTotalTaps').innerText = gameState.totalTaps;
-      document.getElementById('dashWithdrawCount').innerText = gameState.withdrawCount;
 
-      // Countdown Timer Display Management Above Coin
+      const now = Date.now();
+      const created = gameState.createdTimestamp || now;
+      const daysActive = Math.floor((now - created) / (1000 * 60 * 60 * 24)) + 1;
+      document.getElementById('dashAccountAge').innerText = `${daysActive} Days`;
+
+      const eligibilityElem = document.getElementById('dashEligibility');
+      if (daysActive >= 60) {
+        eligibilityElem.innerText = "Eligible ✅";
+        eligibilityElem.style.color = "var(--accent-green)";
+      } else {
+        const remainingDays = 60 - daysActive;
+        eligibilityElem.innerText = `Pending (${remainingDays}d left)`;
+        eligibilityElem.style.color = "var(--primary)";
+      }
+
       const timerBanner = document.getElementById('refillTimerBanner');
       if (gameState.energy < gameState.maxEnergy) {
         timerBanner.style.display = 'flex';
@@ -1150,7 +1180,6 @@
       }
     }
 
-    // Natural 1-Hour Refill Timer Interval (+1 energy every 36 seconds)
     setInterval(() => {
       if (gameState.energy < gameState.maxEnergy) {
         gameState.energy += 1;
@@ -1158,7 +1187,6 @@
       }
     }, 36000);
 
-    // Live UI Timer Refresh Interval
     setInterval(() => {
       if (gameState.energy < gameState.maxEnergy) {
         updateUI();
@@ -1198,17 +1226,31 @@
 
     function requestWithdrawal() {
       const upi = document.getElementById('upiInput').value.trim();
+      
+      const now = Date.now();
+      const created = gameState.createdTimestamp || now;
+      const daysActive = Math.floor((now - created) / (1000 * 60 * 60 * 24)) + 1;
+
+      if (daysActive < 60) {
+        const remaining = 60 - daysActive;
+        alert(`🔒 Account Locked for Payout!\n\nAapko game me 2 month (60 days) active rehna compulsory hai. Aapke account ko pass hone me abhi ${remaining} din baaki hain.`);
+        return;
+      }
+
       if (!upi.includes('@')) {
         alert("Please enter a valid UPI ID.");
         return;
       }
-      if (gameState.coins < 50000) {
-        alert("Minimum withdrawal limit is 50,000 coins (₹50).");
+      
+      // Minimum Withdrawal Check: ₹500 = 5,00,000 Coins (Rate: 1,000 Coins = ₹1)
+      if (gameState.coins < 500000) {
+        alert("Minimum withdrawal limit is 5,00,000 coins (₹500).");
         return;
       }
+
       gameState.upi = upi;
       gameState.withdrawCount += 1;
-      gameState.coins -= 50000;
+      gameState.coins -= 500000;
       updateUI();
       saveGame();
       alert(`Withdrawal request submitted for ${upi}! Processing time: 24 hours.`);
