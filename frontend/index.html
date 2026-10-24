@@ -554,6 +554,7 @@
         <input type="text" id="regName" class="input-field" placeholder="Full Name">
         <input type="email" id="regEmail" class="input-field" placeholder="Email Address">
         <input type="tel" id="regPhone" class="input-field" placeholder="Phone Number">
+        <input type="text" id="regRefCode" class="input-field" placeholder="Referral Code (Optional)" style="display:none;">
         
         <div class="password-wrapper">
           <input type="password" id="regPassword" class="input-field" placeholder="Password">
@@ -567,7 +568,7 @@
       </div>
 
       <div id="loginFields" style="display: none; flex-direction: column; gap: 10px;">
-        <input type="text" id="loginUserKey" class="input-field" placeholder="Email or Phone Number">
+        <input type="text" id="loginUserKey" class="input-field" placeholder="Email Address">
         
         <div class="password-wrapper">
           <input type="password" id="loginPassword" class="input-field" placeholder="Password">
@@ -581,7 +582,7 @@
   </div>
 
   <!-- MAIN GAME CONTAINER -->
-  <div class="app-container">
+  <div class="app-container" id="gameAppContainer" style="display: none;">
     
     <div class="ad-banner" id="adsterraHeaderAd"></div>
 
@@ -649,7 +650,8 @@
               <h4>👥 Invite Friends</h4>
               <p>Get 🪙 1,000 coins per friend</p>
             </div>
-            <button class="upgrade-btn" onclick="copyReferralLink()">Invite</button>
+            <input type="text" id="referralLinkBox" class="input-field" readonly style="margin-top:8px; text-align:center; color:var(--primary);" placeholder="Loading Link...">
+            <button class="upgrade-btn" style="width:100%; margin-top:6px;" onclick="copyReferralLink()">Copy Invite Link 📋</button>
           </div>
         </div>
       </section>
@@ -723,6 +725,9 @@
   </div>
 
   <script>
+    // --- RENDER BACKEND URL ---
+    const BACKEND_URL = "https://click-earn-money.onrender.com";
+
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
       if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
@@ -731,27 +736,38 @@
     };
 
     let gameState = {
+      userId: "",
       user: "",
       email: "",
       phone: "",
-      password: "",
       upi: "",
       coins: 0,
       totalCoinsEarned: 0,
       totalTaps: 0,
-      withdrawCount: 0,
       tapPower: 1,
       energy: 100,
       maxEnergy: 100,
-      lastEnergyDrainTime: Date.now(),
-      createdTimestamp: Date.now(),
-      lastSavedTime: Date.now()
+      createdTimestamp: Date.now()
     };
 
     let authMode = 'signup';
     let clickTimestamps = [];
     const MAX_CLICKS_PER_SEC = 9; 
     const MIN_CLICK_INTERVAL = 45; 
+
+    // URL se referral code detect karna
+    const urlParams = new URLSearchParams(window.location.search);
+    const refParam = urlParams.get('ref');
+    if (refParam) {
+      window.onload = function() {
+        showAuth('signup');
+        document.getElementById('regRefCode').value = refParam;
+        document.getElementById('regRefCode').style.display = 'block';
+        initGameSession();
+      }
+    } else {
+      window.onload = initGameSession;
+    }
 
     function togglePassword(fieldId, icon) {
       const field = document.getElementById(fieldId);
@@ -764,34 +780,33 @@
       }
     }
 
-    function getRegisteredUsers() {
-      const users = localStorage.getItem('bm_users_db');
-      return users ? JSON.parse(atob(users)) : [];
-    }
-
-    function saveRegisteredUsers(usersArray) {
-      localStorage.setItem('bm_users_db', btoa(JSON.stringify(usersArray)));
-    }
-
-    function initGame() {
-      const session = localStorage.getItem('bm_current_session');
-      if (session) {
-        try {
-          gameState = { ...gameState, ...JSON.parse(atob(session)) };
-          if (!gameState.createdTimestamp) gameState.createdTimestamp = Date.now();
-          if (!gameState.lastEnergyDrainTime) gameState.lastEnergyDrainTime = Date.now();
-          if (gameState.user && gameState.email) {
-            document.getElementById('landingOverlay').style.display = 'none';
-            document.getElementById('authOverlay').style.display = 'none';
-            if (gameState.upi) document.getElementById('upiInput').value = gameState.upi;
-            calculateOfflineEarnings();
-          }
-        } catch(e) {
-          console.error("Session corrupt.");
-        }
+    function initGameSession() {
+      const savedUserId = localStorage.getItem('bm_user_id');
+      if (savedUserId) {
+        fetchUserData(savedUserId);
+      } else {
+        loadAdsterraHeaderAd();
       }
-      updateUI();
-      loadAdsterraHeaderAd();
+    }
+
+    async function fetchUserData(userId) {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/user/${userId}`);
+        const data = await res.json();
+        if (data.success) {
+          gameState = { ...gameState, ...data.user, userId: data.user._id };
+          document.getElementById('landingOverlay').style.display = 'none';
+          document.getElementById('authOverlay').style.display = 'none';
+          document.getElementById('gameAppContainer').style.display = 'flex';
+          if (gameState.upi) document.getElementById('upiInput').value = gameState.upi;
+          updateUI();
+          loadAdsterraHeaderAd();
+        } else {
+          localStorage.removeItem('bm_user_id');
+        }
+      } catch (err) {
+        console.error("Session fetch error:", err);
+      }
     }
 
     function showAuth(mode) {
@@ -811,9 +826,10 @@
         btn.innerText = "Sign Up 🚀";
         signupBox.style.display = 'flex';
         loginBox.style.display = 'none';
+        if (refParam) document.getElementById('regRefCode').style.display = 'block';
       } else {
         title.innerText = "Welcome Back";
-        subtitle.innerText = "Enter Email/Phone & Password to login.";
+        subtitle.innerText = "Enter Email & Password to login.";
         btn.innerText = "Login ⚡";
         signupBox.style.display = 'none';
         loginBox.style.display = 'flex';
@@ -825,110 +841,79 @@
       document.getElementById('landingOverlay').style.display = 'flex';
     }
 
-    function handleAuth() {
-      const users = getRegisteredUsers();
-
+    async function handleAuth() {
       if (authMode === 'signup') {
         const name = document.getElementById('regName').value.trim();
         const email = document.getElementById('regEmail').value.trim().toLowerCase();
         const phone = document.getElementById('regPhone').value.trim();
-        const pass = document.getElementById('regPassword').value;
-        const confirmPass = document.getElementById('regConfirmPassword').value;
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+        const refCode = document.getElementById('regRefCode').value.trim();
 
-        if (!name || !email || !phone || !pass || !confirmPass) {
+        if (!name || !email || !phone || !password || !confirmPassword) {
           alert("Please fill all fields!");
           return;
         }
 
-        if (pass !== confirmPass) {
+        if (password !== confirmPassword) {
           alert("Password and Confirm Password do not match!");
           return;
         }
 
-        const existingUser = users.find(u => u.email === email || u.phone === phone);
-        if (existingUser) {
-          alert("Account already exists with this Email or Phone! Please Login.");
-          showAuth('login');
-          return;
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, phone, password, refCode })
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert("Account created successfully! Please login.");
+            showAuth('login');
+          } else {
+            alert(data.error || "Registration failed");
+          }
+        } catch (err) {
+          alert("Network error: " + err.message);
         }
-
-        const newUserState = {
-          ...gameState,
-          user: name,
-          email: email,
-          phone: phone,
-          password: pass,
-          createdTimestamp: Date.now(),
-          lastEnergyDrainTime: Date.now()
-        };
-
-        users.push(newUserState);
-        saveRegisteredUsers(users);
-        gameState = newUserState;
-        saveGame();
-        alert("Account created successfully!");
 
       } else {
-        const userKey = document.getElementById('loginUserKey').value.trim().toLowerCase();
-        const pass = document.getElementById('loginPassword').value;
+        const email = document.getElementById('loginUserKey').value.trim().toLowerCase();
+        const password = document.getElementById('loginPassword').value;
 
-        if (!userKey || !pass) {
-          alert("Please enter both Email/Phone and Password!");
+        if (!email || !password) {
+          alert("Please enter both Email and Password!");
           return;
         }
 
-        const foundUser = users.find(u => (u.email === userKey || u.phone === userKey));
-
-        if (!foundUser) {
-          alert("Account not found! Please sign up first.");
-          return;
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (data.success) {
+            gameState = { ...gameState, ...data.user, userId: data.user._id };
+            localStorage.setItem('bm_user_id', gameState.userId);
+            document.getElementById('authOverlay').style.display = 'none';
+            document.getElementById('landingOverlay').style.display = 'none';
+            document.getElementById('gameAppContainer').style.display = 'flex';
+            updateUI();
+            loadAdsterraHeaderAd();
+            alert(`Welcome back, ${gameState.user}!`);
+          } else {
+            alert(data.error || "Invalid credentials");
+          }
+        } catch (err) {
+          alert("Network error: " + err.message);
         }
-
-        if (foundUser.password !== pass) {
-          alert("Incorrect password! Please try again.");
-          return;
-        }
-
-        gameState = foundUser;
-        if (!gameState.createdTimestamp) gameState.createdTimestamp = Date.now();
-        if (!gameState.lastEnergyDrainTime) gameState.lastEnergyDrainTime = Date.now();
-        saveGame();
-        alert(`Welcome back, ${gameState.user}!`);
-      }
-
-      document.getElementById('authOverlay').style.display = 'none';
-      document.getElementById('landingOverlay').style.display = 'none';
-      updateUI();
-    }
-
-    function saveGame() {
-      gameState.lastSavedTime = Date.now();
-      localStorage.setItem('bm_current_session', btoa(JSON.stringify(gameState)));
-
-      const users = getRegisteredUsers();
-      const idx = users.findIndex(u => u.email === gameState.email);
-      if (idx !== -1) {
-        users[idx] = gameState;
-        saveRegisteredUsers(users);
       }
     }
-    setInterval(saveGame, 4000);
 
     function logoutUser() {
-      localStorage.removeItem('bm_current_session');
+      localStorage.removeItem('bm_user_id');
       location.reload();
-    }
-
-    function calculateOfflineEarnings() {
-      const now = Date.now();
-      const secondsAway = Math.floor((now - gameState.lastSavedTime) / 1000);
-
-      if (secondsAway > 0 && gameState.energy < gameState.maxEnergy) {
-        const energyGained = Math.floor(secondsAway / 36);
-        if (energyGained > 0) {
-          gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + energyGained);
-        }
-      }
     }
 
     function loadAdsterraHeaderAd() {
@@ -969,7 +954,7 @@
     setInterval(loadAdsterraHeaderAd, 60000);
 
     const minerBtn = document.getElementById('minerBtn');
-    minerBtn.addEventListener('click', (e) => {
+    minerBtn.addEventListener('click', async (e) => {
       const now = Date.now();
 
       if (clickTimestamps.length > 0) {
@@ -993,16 +978,28 @@
         return;
       }
 
-      gameState.coins += gameState.tapPower;
-      gameState.totalCoinsEarned += gameState.tapPower;
-      gameState.totalTaps += 1;
-      gameState.energy -= 1;
-      gameState.lastEnergyDrainTime = Date.now();
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/tap`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: gameState.userId })
+        });
+        const data = await res.json();
+        if (data.success) {
+          gameState.coins = data.coins;
+          gameState.energy = data.energy;
+          gameState.totalCoinsEarned = data.totalCoinsEarned || (gameState.totalCoinsEarned + gameState.tapPower);
+          gameState.totalTaps = data.totalTaps || (gameState.totalTaps + 1);
 
-      if (navigator.vibrate) navigator.vibrate(25);
-      createFloatingText(e.clientX, e.clientY, `+${gameState.tapPower}`);
-
-      updateUI();
+          if (navigator.vibrate) navigator.vibrate(25);
+          createFloatingText(e.clientX, e.clientY, `+${gameState.tapPower}`);
+          updateUI();
+        } else {
+          alert(data.error || "Energy empty!");
+        }
+      } catch (err) {
+        console.error("Tap sync error:", err);
+      }
     });
 
     function createFloatingText(x, y, text) {
@@ -1026,8 +1023,13 @@
 
       document.getElementById('dashUserName').innerText = gameState.user || "User";
       document.getElementById('dashUserEmail').innerText = gameState.email || "Not set";
-      document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned);
-      document.getElementById('dashTotalTaps').innerText = gameState.totalTaps;
+      document.getElementById('dashTotalCoins').innerText = Math.floor(gameState.totalCoinsEarned || gameState.coins);
+      document.getElementById('dashTotalTaps').innerText = gameState.totalTaps || 0;
+
+      if (gameState.userId) {
+        const refLink = `${window.location.origin}${window.location.pathname}?ref=${gameState.userId}`;
+        document.getElementById('referralLinkBox').value = refLink;
+      }
 
       const now = Date.now();
       const created = gameState.createdTimestamp || now;
@@ -1060,45 +1062,7 @@
         eligibilityElem.innerText = `Pending (${remainingDays}d left)`;
         eligibilityElem.style.color = "var(--primary)";
       }
-
-      updateLiveCountdown();
     }
-
-    function updateLiveCountdown() {
-      const timerBanner = document.getElementById('refillTimerBanner');
-      if (gameState.energy < gameState.maxEnergy) {
-        timerBanner.style.display = 'flex';
-        
-        const neededEnergy = gameState.maxEnergy - gameState.energy;
-        const totalSecsNeeded = neededEnergy * 36;
-        
-        const elapsedSecs = Math.floor((Date.now() - (gameState.lastEnergyDrainTime || Date.now())) / 1000);
-        const remainingSecs = Math.max(0, totalSecsNeeded - elapsedSecs);
-
-        const mins = Math.floor(remainingSecs / 60);
-        const secs = remainingSecs % 60;
-        
-        document.getElementById('refillCountdownText').innerText = `${mins}m ${secs < 10 ? '0' + secs : secs}s`;
-      } else {
-        timerBanner.style.display = 'none';
-      }
-    }
-
-    // Auto Energy Passive Regeneration System
-    setInterval(() => {
-      if (gameState.energy < gameState.maxEnergy) {
-        gameState.energy += 1;
-        gameState.lastEnergyDrainTime = Date.now();
-        updateUI();
-      }
-    }, 36000);
-
-    // Live Second-by-Second Countdown Updater
-    setInterval(() => {
-      if (gameState.energy < gameState.maxEnergy) {
-        updateLiveCountdown();
-      }
-    }, 1000);
 
     function switchTab(tabId, btn) {
       ['upgradesTab', 'earnTab', 'dashboardTab', 'walletTab'].forEach(id => {
@@ -1108,17 +1072,30 @@
       btn.classList.add('active');
     }
 
-    function watchRewardedAd() {
+    async function watchRewardedAd() {
       const adLink = "https://uplcm.com/4/12101517"; 
       window.open(adLink, '_blank');
       alert("Ad dekhne ke baad game par wapas aayein, aapki energy instant 100/100 ho jayegi!");
 
-      setTimeout(() => {
-        gameState.energy = gameState.maxEnergy;
-        closeModal();
-        updateUI();
-        saveGame();
-        alert("⚡ Instant Energy Refilled! Total Energy: 100/100");
+      setTimeout(async () => {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/refill-energy`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: gameState.userId })
+          });
+          const data = await res.json();
+          if(data.success) {
+            gameState.energy = data.energy;
+            closeModal();
+            updateUI();
+            alert("⚡ Instant Energy Refilled! Total Energy: 100/100");
+          }
+        } catch(e) {
+          gameState.energy = 100;
+          closeModal();
+          updateUI();
+        }
       }, 4000);
     }
 
@@ -1126,7 +1103,14 @@
       document.getElementById('energyModal').style.display = 'none';
     }
 
-    function requestWithdrawal() {
+    function copyReferralLink() {
+      const copyText = document.getElementById('referralLinkBox');
+      copyText.select();
+      navigator.clipboard.writeText(copyText.value);
+      alert("Referral link copied successfully! 📋");
+    }
+
+    async function requestWithdrawal() {
       const upi = document.getElementById('upiInput').value.trim();
       
       const now = Date.now();
@@ -1149,15 +1133,11 @@
       }
 
       gameState.upi = upi;
-      gameState.withdrawCount += 1;
       gameState.coins -= 500000;
       updateUI();
-      saveGame();
 
       alert(`✅ Withdrawal Request Submitted Successfully!\n\nUPI ID: ${upi}\nAmount: ₹500\n\nAapka payout 24 hours ke andar process kar diya jayega.`);
     }
-
-    window.onload = initGame;
   </script>
 </body>
 </html>
