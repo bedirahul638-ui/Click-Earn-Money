@@ -159,7 +159,7 @@ app.get('/api/admin/dashboard', async (req, res) => {
     const { secret } = req.query;
     
     // Yahan apna secret password set hai jo sirf aapko pata hoga
-    const ADMIN_SECRET_KEY = "rahul_admin_12345"; 
+    const ADMIN_SECRET_KEY = "200301Pr"; 
 
     if (secret !== ADMIN_SECRET_KEY) {
       return res.status(403).json({ success: false, error: "Access Denied! Incorrect Admin Password." });
