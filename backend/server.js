@@ -111,7 +111,7 @@ app.post('/api/tap', async (req, res) => {
     }
 
     if (user.energy <= 0) {
-      return.status(400).json({ success: false, error: "Energy empty!" });
+      return res.status(400).json({ success: false, error: "Energy empty!" });
     }
 
     // Energy reduce aur coins increase karna
